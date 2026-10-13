@@ -45,6 +45,10 @@ model User {
   orders        Order[]
   reviews       Review[]
   wishlistItems Wishlist[]
+
+  @@index([role])
+  @@index([createdAt])
+  @@map("users")
 }
 
 model Category {
@@ -54,6 +58,8 @@ model Category {
   image     String?
   products  Product[]
   createdAt DateTime  @default(now())
+
+  @@map("categories")
 }
 
 model Product {
@@ -78,12 +84,16 @@ model Product {
 
   @@index([brand])
   @@index([categoryId])
+  @@index([featured])
+  @@index([price])
+  @@index([createdAt])
+  @@map("products")
 }
 
 model Order {
   id                String        @id @default(cuid())
   orderNumber       String        @unique
-  user              User          @relation(fields: [userId], references: [id])
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId            String
   customerName      String
   customerEmail     String
@@ -100,13 +110,16 @@ model Order {
   items             OrderItem[]
 
   @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
 }
 
 model OrderItem {
   id        String   @id @default(cuid())
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   name      String
   price     Decimal  @db.Decimal(10, 2)
@@ -116,6 +129,7 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+  @@map("order_items")
 }
 
 model Review {
@@ -130,6 +144,8 @@ model Review {
 
   @@index([productId])
   @@index([userId])
+  @@index([createdAt])
+  @@map("reviews")
 }
 
 model Wishlist {
@@ -142,4 +158,6 @@ model Wishlist {
 
   @@unique([userId, productId])
   @@index([userId])
+  @@index([productId])
+  @@map("wishlists")
 }
