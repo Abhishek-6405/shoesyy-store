@@ -1,0 +1,85 @@
+/* manage_products.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.manage-products-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.manage-products-header {
+    background-color: #1b263b;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.manage-products-nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+.manage-products-main {
+    flex: 1;
+    padding: 20px;
+}
+
+.manage-products-section {
+    margin-bottom: 20px;
+}
+
+.manage-products-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.manage-products-table th, .manage-products-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.manage-products-table th {
+    background-color: #1b263b;
+    color: white;
+}
+
+.manage-products-table img {
+    max-width: 50px;
+    max-height: 50px;
+}
+
+.btn-add-product, .btn-add, .btn-cancel {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-add-product {
+    background-color: #415a77;
+    color: white;
+}
+
+.btn-add {
+    background-color: #1b263b;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #778da9;
+    color: white;
+}
+
+.manage-products-footer {
+    background-color: #1b263b;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
