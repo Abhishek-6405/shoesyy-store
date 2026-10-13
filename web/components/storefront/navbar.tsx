@@ -220,7 +220,7 @@ export function Navbar() {
                     initial={{ scale: 0.4, opacity: 0 }}
                     animate={{ scale: [1, 1.35, 1], opacity: 1 }}
                     exit={{ scale: 0.4, opacity: 0 }}
-                    transition={{ duration: 0.3, type: "spring", stiffness: 450, damping: 20 }}
+                    transition={{ duration: 0.35, ease: "easeOut", times: [0, 0.5, 1] }}
                     className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center text-[9px] font-black bg-brand-500 text-white rounded-full px-1 shadow-sm"
                   >
                     {cartItemCount}

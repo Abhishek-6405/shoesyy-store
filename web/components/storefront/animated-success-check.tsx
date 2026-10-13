@@ -47,7 +47,12 @@ export function AnimatedSuccessCheck() {
               x: [0, (i % 2 === 0 ? 1 : -1) * (20 + (i * 8))],
               y: [0, -15 - (i * 6)],
             }}
-            transition={{ duration: 0.7, delay: 0.35 + i * 0.05 }}
+            transition={{
+              duration: 0.7,
+              ease: "easeOut",
+              times: [0, 0.5, 1],
+              delay: 0.35 + i * 0.05,
+            }}
             className={`absolute w-2 h-2 rounded-full ${
               i % 3 === 0
                 ? "bg-amber-400"
