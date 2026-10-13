@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart";
 import { useCartDetails } from "@/lib/hooks/use-cart-details";
@@ -10,6 +11,7 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export function CartDrawer() {
+  const pathname = usePathname();
   const isOpen = useCartStore((state) => state.isOpen);
   const closeCart = useCartStore((state) => state.closeCart);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -37,6 +39,7 @@ export function CartDrawer() {
     };
   }, [isOpen]);
 
+  if (pathname?.startsWith("/admin")) return null;
   if (!isOpen) return null;
 
   return (

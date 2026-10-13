@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   ShoppingBag,
@@ -22,6 +22,7 @@ import { Container } from "@/components/ui/container";
 
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, status } = useSession();
 
   const [mounted, setMounted] = useState(false);
@@ -37,6 +38,11 @@ export function Navbar() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Do not render storefront navbar inside admin portal
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,6 +154,18 @@ export function Navbar() {
                 </span>
               )}
             </button>
+
+            {/* Admin Badge for Admin Users */}
+            {mounted && session?.user?.role === "ADMIN" && (
+              <Link
+                href="/admin"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-400 dark:bg-brand-950/60 dark:hover:bg-brand-900/60 rounded-xl border border-brand-200 dark:border-brand-800 transition-colors"
+                title="Go to Admin Dashboard"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                Admin
+              </Link>
+            )}
 
             {/* User Account / Auth */}
             <div className="relative">

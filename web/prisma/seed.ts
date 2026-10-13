@@ -679,51 +679,133 @@ async function main() {
     }
   }
 
-  // 4. Seed a Sample Demo Order
-  const firstProduct = await prisma.product.findFirst({
-    where: { slug: "nike-air-jordan-1-retro-high-og" },
-  });
+  // 4. Seed ~30 Demo Orders Spread Across the Last 30 Days (Idempotent)
+  console.log("🛒 Seeding ~30 realistic demo orders spread over the last 30 days...");
 
-  if (firstProduct) {
-    const existingOrder = await prisma.order.findUnique({
-      where: { orderNumber: "ORD-DEMO-001" },
-    });
+  const allProducts = await prisma.product.findMany();
+  if (allProducts.length > 0) {
+    const customers = [
+      { id: demoCustomer.id, name: "Demo User", email: "user@shoesy.demo", phone: "+91 98765 43210", city: "Bengaluru", state: "Karnataka", postalCode: "560001", street: "42 Sneaker Lane, MG Road" },
+      { id: reviewer1.id, name: "Chetan Bhati", email: "chetan@example.com", phone: "+91 98111 22334", city: "Mumbai", state: "Maharashtra", postalCode: "400050", street: "12 Linking Road, Bandra West" },
+      { id: reviewer2.id, name: "Gaurav Gauda", email: "gaurav@example.com", phone: "+91 98222 33445", city: "New Delhi", state: "Delhi", postalCode: "110001", street: "88 Connaught Place, Block C" },
+      { id: reviewer3.id, name: "Shubham Bhandarkar", email: "shubham@example.com", phone: "+91 98333 44556", city: "Pune", state: "Maharashtra", postalCode: "411004", street: "15 FC Road, Shivaji Nagar" },
+      { id: reviewer4.id, name: "Ved Wadekar", email: "ved@example.com", phone: "+91 98444 55667", city: "Hyderabad", state: "Telangana", postalCode: "500081", street: "23 Hitec City Main Rd, Madhapur" },
+    ];
 
-    if (!existingOrder) {
+    const orderStatuses = [
+      "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED",
+      "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED",
+      "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED", "DELIVERED",
+      "SHIPPED", "SHIPPED", "SHIPPED", "SHIPPED", "SHIPPED",
+      "PROCESSING", "PROCESSING", "PROCESSING", "PROCESSING",
+      "PENDING", "PENDING", "PENDING",
+      "CANCELLED", "CANCELLED",
+    ] as const;
+
+    const paymentMethods = [
+      "COD", "RAZORPAY", "COD", "RAZORPAY", "COD",
+      "COD", "RAZORPAY", "COD", "RAZORPAY", "COD",
+      "COD", "RAZORPAY", "COD", "COD", "RAZORPAY", "COD",
+      "RAZORPAY", "COD", "RAZORPAY", "COD", "COD",
+      "RAZORPAY", "COD", "RAZORPAY", "COD",
+      "COD", "RAZORPAY", "COD",
+      "RAZORPAY", "COD",
+    ] as const;
+
+    const baseNow = new Date();
+
+    for (let i = 1; i <= 30; i++) {
+      const orderNumber = `ORD-DEMO-${String(i).padStart(3, "0")}`;
+      const existing = await prisma.order.findUnique({
+        where: { orderNumber },
+      });
+
+      if (existing) {
+        continue;
+      }
+
+      const status = orderStatuses[i - 1];
+      const paymentMethod = paymentMethods[i - 1];
+      const customer = customers[(i - 1) % customers.length];
+
+      // Distribute creation dates smoothly across 0 to 29 days ago
+      const daysAgo = 29 - Math.floor(((i - 1) * 29) / 29);
+      const hoursAgo = (i * 3) % 24;
+      const orderCreatedAt = new Date(baseNow.getTime() - (daysAgo * 24 * 60 * 60 * 1000) - (hoursAgo * 60 * 60 * 1000));
+
+      let paymentStatus: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED" = "COMPLETED";
+      if (status === "CANCELLED") {
+        paymentStatus = paymentMethod === "RAZORPAY" ? "REFUNDED" : "FAILED";
+      } else if (status === "PENDING") {
+        paymentStatus = "PENDING";
+      } else if (status === "PROCESSING" && paymentMethod === "COD") {
+        paymentStatus = "PENDING";
+      }
+
+      // Pick 1 to 2 products
+      const p1 = allProducts[(i * 3) % allProducts.length];
+      const hasSecondItem = i % 4 === 0;
+      const p2 = hasSecondItem ? allProducts[(i * 3 + 1) % allProducts.length] : null;
+
+      const p1Size = p1.sizes[(i + 1) % p1.sizes.length] || 9;
+      const p1Qty = i % 7 === 0 ? 2 : 1;
+      const p1Price = Number(p1.price);
+
+      const itemsToCreate = [
+        {
+          productId: p1.id,
+          name: p1.name,
+          price: p1Price,
+          size: p1Size,
+          quantity: p1Qty,
+          image: p1.images[0] || "",
+        },
+      ];
+
+      let totalAmount = p1Price * p1Qty;
+
+      if (p2) {
+        const p2Size = p2.sizes[i % p2.sizes.length] || 10;
+        const p2Qty = 1;
+        const p2Price = Number(p2.price);
+        itemsToCreate.push({
+          productId: p2.id,
+          name: p2.name,
+          price: p2Price,
+          size: p2Size,
+          quantity: p2Qty,
+          image: p2.images[0] || "",
+        });
+        totalAmount += p2Price * p2Qty;
+      }
+
       await prisma.order.create({
         data: {
-          orderNumber: "ORD-DEMO-001",
-          userId: demoCustomer.id,
-          customerName: "Demo User",
-          customerEmail: "user@shoesy.demo",
-          customerPhone: "+91 98765 43210",
+          orderNumber,
+          userId: customer.id,
+          customerName: customer.name,
+          customerEmail: customer.email,
+          customerPhone: customer.phone,
           shippingAddress: {
-            street: "42 Sneaker Lane, MG Road",
-            city: "Bengaluru",
-            state: "Karnataka",
-            postalCode: "560001",
+            street: customer.street,
+            city: customer.city,
+            state: customer.state,
+            postalCode: customer.postalCode,
             country: "India",
           },
-          totalAmount: firstProduct.price,
-          status: "DELIVERED",
-          paymentMethod: "COD",
-          paymentStatus: "COMPLETED",
+          totalAmount,
+          status,
+          paymentMethod,
+          paymentStatus,
+          createdAt: orderCreatedAt,
           items: {
-            create: [
-              {
-                productId: firstProduct.id,
-                name: firstProduct.name,
-                price: firstProduct.price,
-                size: 9,
-                quantity: 1,
-                image: firstProduct.images[0],
-              },
-            ],
+            create: itemsToCreate,
           },
         },
       });
-      console.log("🛒 Seeded sample order ORD-DEMO-001");
     }
+
+    console.log("🛒 Seeded 30 realistic demo orders across 30 days");
   }
 
   console.log("✅ Database seeding completed successfully!");

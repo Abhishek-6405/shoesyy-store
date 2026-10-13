@@ -11,6 +11,35 @@ interface Params {
   };
 }
 
+export async function GET(req: NextRequest, { params }: Params) {
+  try {
+    const { user, error, status } = await requireAdmin();
+    if (error || !user) {
+      return errorResponse(error || "Unauthorized", status);
+    }
+
+    const { id } = params;
+
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+      },
+    });
+
+    if (!product) {
+      return errorResponse("Product not found", 404);
+    }
+
+    return successResponse({
+      ...product,
+      price: Number(product.price),
+    });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}
+
 export async function PUT(req: NextRequest, { params }: Params) {
   try {
     const { user, error, status } = await requireAdmin();
@@ -66,6 +95,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
         ...(validated.colors && { colors: validated.colors }),
         ...(validated.stock !== undefined && { stock: validated.stock }),
         ...(validated.featured !== undefined && { featured: validated.featured }),
+        ...(validated.isActive !== undefined && { isActive: validated.isActive }),
       },
       include: {
         category: true,
