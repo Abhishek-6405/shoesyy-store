@@ -9,6 +9,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/lib/store/cart";
+import { useWishlistStore } from "@/lib/store/wishlist";
 import { useToast } from "@/components/ui/toast";
 import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 
@@ -71,11 +72,13 @@ export default function WishlistPage() {
   const handleRemove = async (productId: string, name: string) => {
     try {
       setItems((prev) => prev.filter((i) => i.productId !== productId));
+      useWishlistStore.getState().setSaved(productId, false);
       const res = await fetch(`/api/wishlist/${productId}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to remove item");
       success(`Removed ${name} from wishlist`);
     } catch {
       toastError("Could not remove item. Please try again.");
+      useWishlistStore.getState().setSaved(productId, true);
       fetchWishlist();
     }
   };

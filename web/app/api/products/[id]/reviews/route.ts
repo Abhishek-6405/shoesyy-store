@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { reviewSchema } from "@/lib/validations";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
+import { revalidateCatalog } from "@/lib/catalog";
 
 interface Params {
   params: {
@@ -86,6 +87,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       },
     });
 
+    revalidateCatalog();
     return successResponse(review, 201);
   } catch (err) {
     return handleApiError(err);

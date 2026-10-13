@@ -2,7 +2,8 @@ import { NextRequest } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { updateOrderStatusSchema } from "@/lib/validations";
-import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
+import { successResponse, errorResponse, handleApiError, ApiError } from "@/lib/api-response";
+import { revalidateCatalog } from "@/lib/catalog";
 import { OrderStatus } from "@prisma/client";
 
 interface Params {
@@ -96,7 +97,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       }
     }
 
-    // Atomic transaction: verify status and restore stock ONLY on first transition to CANCELLED
+    // Compare-and-set on the current status, so concurrent requests cannot both
+    // apply the transition (and stock is restored at most once on cancellation).
     const updated = await prisma.$transaction(async (tx) => {
       const freshOrder = await tx.order.findUnique({
         where: { id },
@@ -104,11 +106,23 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       });
 
       if (!freshOrder) {
-        throw new Error("Order not found");
+        throw new ApiError("Order not found", 404);
       }
 
       if (freshOrder.status === OrderStatus.DELIVERED || freshOrder.status === OrderStatus.CANCELLED) {
-        throw new Error(`Order is in final state (${freshOrder.status}) and cannot be transitioned.`);
+        throw new ApiError(
+          `Order ${freshOrder.orderNumber} is already ${freshOrder.status} and cannot be modified.`,
+          409
+        );
+      }
+
+      const { count } = await tx.order.updateMany({
+        where: { id, status: freshOrder.status },
+        data: { status: validated.status },
+      });
+
+      if (count !== 1) {
+        throw new ApiError("Order status was changed by another request. Please refresh and try again.", 409);
       }
 
       if (validated.status === OrderStatus.CANCELLED) {
@@ -120,12 +134,13 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         }
       }
 
-      return tx.order.update({
+      return tx.order.findUniqueOrThrow({
         where: { id },
-        data: { status: validated.status },
         include: { items: true },
       });
     });
+
+    revalidateCatalog();
 
     return successResponse({
       ...updated,

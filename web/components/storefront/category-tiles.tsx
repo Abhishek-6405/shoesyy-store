@@ -81,7 +81,7 @@ export function CategoryTiles({ categories }: CategoryTilesProps) {
                   </div>
 
                   {/* Sliding arrow */}
-                  <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center transform translate-x-1 group-hover:translate-x-0 group-hover:bg-brand-500 transition-all duration-300">
+                  <div className="w-8 h-8 rounded-full bg-white/25 flex items-center justify-center transform translate-x-1 group-hover:translate-x-0 group-hover:bg-brand-500 transition-[transform,background-color] duration-300">
                     <ArrowRight className="w-4 h-4 text-white transform group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { Prisma } from "@prisma/client";
 
 export function successResponse<T>(data: T, status = 200) {
   return NextResponse.json(
@@ -22,8 +23,17 @@ export function errorResponse(message: string, status = 400, details?: unknown) 
   );
 }
 
+export class ApiError extends Error {
+  constructor(message: string, public status = 400) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 export function handleApiError(err: unknown) {
-  console.error("API Route Error:", err);
+  if (err instanceof ApiError) {
+    return errorResponse(err.message, err.status);
+  }
 
   if (err instanceof ZodError) {
     const issues = err.issues || [];
@@ -34,9 +44,16 @@ export function handleApiError(err: unknown) {
     return errorResponse("Validation error", 422, formatted);
   }
 
-  if (err instanceof Error) {
-    return errorResponse(err.message, 500);
+  if (err instanceof SyntaxError) {
+    return errorResponse("Invalid JSON request body", 400);
   }
 
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === "P2002") return errorResponse("A record with this value already exists", 409);
+    if (err.code === "P2025") return errorResponse("Record not found", 404);
+  }
+
+  console.error("API Route Error:", err);
+  // Internal error details (DB messages, stack traces) are logged, never returned.
   return errorResponse("An unexpected server error occurred", 500);
 }

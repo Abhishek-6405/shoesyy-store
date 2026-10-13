@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
-import { DashboardCharts } from "@/components/admin/dashboard-charts";
+import { DashboardChartsLazy as DashboardCharts } from "@/components/admin/dashboard-charts-lazy";
 import { AdminStatCards } from "@/components/admin/admin-stat-cards";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { productSchema } from "@/lib/validations";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
+import { revalidateCatalog } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
 import { Prisma } from "@prisma/client";
 
@@ -162,6 +163,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    revalidateCatalog();
     return successResponse(
       {
         ...product,

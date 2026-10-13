@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import prisma from "@/lib/prisma";
+import { getActiveProductSlugs, getProductPageData } from "@/lib/catalog";
 import { Container } from "@/components/ui/container";
 import { ProductView } from "@/components/storefront/product-view";
 import { ProductCard } from "@/components/storefront/product-card";
@@ -10,101 +10,30 @@ interface ProductPageProps {
   };
 }
 
-export const revalidate = 30; // ISR 30 seconds
+// ISR: active products are pre-rendered at build; other slugs render on first request
+// and are then cached. Regenerated every 60s or on revalidateTag("catalog").
+export const revalidate = 60;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const slugs = await getActiveProductSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch (err) {
+    // Don't fail the build if the DB is unreachable; pages will render on demand.
+    console.warn("generateStaticParams: could not load product slugs", err);
+    return [];
+  }
+}
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const { slug } = params;
+  const data = await getProductPageData(params.slug);
 
-  const product = await prisma.product.findFirst({
-    where: {
-      isActive: true,
-      OR: [{ slug }, { id: slug }],
-    },
-    include: {
-      category: { select: { id: true, name: true, slug: true } },
-      reviews: {
-        include: {
-          user: {
-            select: { id: true, name: true, username: true },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  });
-
-  if (!product) {
+  if (!data) {
     notFound();
   }
 
-  // Fetch related active products from same category or brand
-  const relatedRaw = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      id: { not: product.id },
-      OR: [
-        { categoryId: product.categoryId },
-        { brand: { equals: product.brand, mode: "insensitive" } },
-      ],
-    },
-    include: {
-      category: { select: { id: true, name: true, slug: true } },
-      reviews: { select: { rating: true } },
-    },
-    take: 4,
-    orderBy: { createdAt: "desc" },
-  });
-
-  const reviewCount = product.reviews.length;
-  const avg =
-    reviewCount > 0
-      ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount
-      : 4.8;
-
-  const formattedProduct = {
-    id: product.id,
-    name: product.name,
-    slug: product.slug,
-    brand: product.brand,
-    description: product.description,
-    price: Number(product.price),
-    stock: product.stock,
-    images: product.images,
-    sizes: product.sizes,
-    colors: product.colors,
-    isFeatured: product.featured,
-    category: product.category,
-    reviews: product.reviews.map((r) => ({
-      id: r.id,
-      rating: r.rating,
-      comment: r.comment,
-      createdAt: r.createdAt.toISOString(),
-      user: r.user,
-    })),
-    averageRating: avg,
-    reviewCount,
-  };
-
-  const relatedProducts = relatedRaw.map((p) => {
-    const count = p.reviews.length;
-    const rAvg =
-      count > 0 ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / count : 4.8;
-    return {
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      brand: p.brand,
-      price: Number(p.price),
-      stock: p.stock,
-      images: p.images,
-      sizes: p.sizes,
-      colors: p.colors,
-      isFeatured: p.featured,
-      category: p.category,
-      averageRating: rAvg,
-      reviewCount: count || 3,
-    };
-  });
+  const { product: formattedProduct, related: relatedProducts } = data;
 
   return (
     <div className="py-8 sm:py-14">

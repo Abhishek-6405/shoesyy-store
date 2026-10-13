@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { createRazorpayOrderSchema } from "@/lib/validations";
+import { priceCart } from "@/lib/orders";
 import {
   createRazorpayOrder,
   isRazorpayConfigured,
@@ -26,40 +26,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validated = createRazorpayOrderSchema.parse(body);
 
-    const productIds = validated.items.map((i) => i.productId);
-    const products = await prisma.product.findMany({
-      where: {
-        id: { in: productIds },
-        isActive: true,
-      },
-    });
-
-    const productMap = new Map(products.map((p) => [p.id, p]));
-    let grandTotal = 0;
-
-    for (const item of validated.items) {
-      const product = productMap.get(item.productId);
-      if (!product || !product.isActive) {
-        return errorResponse(`Product with ID "${item.productId}" is unavailable or inactive.`, 404);
-      }
-      if (product.stock < item.quantity) {
-        return errorResponse(
-          `Insufficient stock for "${product.name}". Only ${product.stock} left in stock.`,
-          400
-        );
-      }
-      grandTotal += Number(product.price) * item.quantity;
-    }
+    const cart = await priceCart(validated.items);
 
     const receipt = `rcpt_${Date.now().toString().slice(-8)}`;
-    const razorpayOrder = await createRazorpayOrder(grandTotal, receipt);
+    const razorpayOrder = await createRazorpayOrder(cart.total, receipt);
 
     return successResponse({
       orderId: razorpayOrder.id,
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
       keyId: razorpayKeyId,
-      computedTotal: grandTotal,
+      computedTotal: cart.total,
     });
   } catch (err) {
     return handleApiError(err);

@@ -220,7 +220,7 @@ export function Footer() {
       <div className="border-t border-zinc-900 py-6 text-center text-xs text-zinc-500">
         <Container>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p>© {new Date().getFullYear()} SHOESY Inc. Built with Next.js 14, Prisma, PostgreSQL & Tailwind CSS.</p>
+            <p suppressHydrationWarning>© {new Date().getFullYear()} SHOESY Inc. Built with Next.js 14, Prisma, PostgreSQL & Tailwind CSS.</p>
             <p className="text-zinc-400 font-medium">Demo Portfolio Project for Vercel Deployment</p>
           </div>
         </Container>

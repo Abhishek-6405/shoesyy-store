@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { categorySchema } from "@/lib/validations";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
+import { revalidateCatalog } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
 
 interface Params {
@@ -52,6 +53,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       },
     });
 
+    revalidateCatalog();
     return successResponse(updated);
   } catch (err) {
     return handleApiError(err);
@@ -91,6 +93,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       where: { id },
     });
 
+    revalidateCatalog();
     return successResponse({
       message: `Category "${existing.name}" deleted successfully`,
       deletedId: id,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getHomeData } from "@/lib/catalog";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/storefront/product-card";
@@ -10,68 +10,9 @@ import { TestimonialsCarousel } from "@/components/storefront/testimonials-carou
 import { ScrollReveal } from "@/components/storefront/scroll-reveal";
 import { ArrowRight, Flame, Star } from "lucide-react";
 
-export const revalidate = 60; // ISR cache for 60 seconds
-
-async function getHomeData() {
-  const [featuredProducts, topRatedProducts, categories] = await Promise.all([
-    prisma.product.findMany({
-      where: { isActive: true, featured: true },
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        reviews: { select: { rating: true } },
-      },
-      take: 8,
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.product.findMany({
-      where: { isActive: true },
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        reviews: { select: { rating: true } },
-      },
-      take: 4,
-      orderBy: { stock: "desc" },
-    }),
-    prisma.category.findMany({
-      include: {
-        _count: {
-          select: { products: { where: { isActive: true } } },
-        },
-      },
-      orderBy: { name: "asc" },
-    }),
-  ]);
-
-  const formatProducts = (products: typeof featuredProducts) =>
-    products.map((p) => {
-      const reviewCount = p.reviews.length;
-      const avg =
-        reviewCount > 0
-          ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount
-          : 4.8;
-      return {
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        brand: p.brand,
-        price: Number(p.price),
-        stock: p.stock,
-        images: p.images,
-        sizes: p.sizes,
-        colors: p.colors,
-        isFeatured: p.featured,
-        category: p.category,
-        averageRating: avg,
-        reviewCount: reviewCount || 3,
-      };
-    });
-
-  return {
-    featured: formatProducts(featuredProducts),
-    topRated: formatProducts(topRatedProducts),
-    categories,
-  };
-}
+// ISR: the page is statically cached and regenerated at most every 60s, or immediately
+// when an admin/order mutation calls revalidateTag("catalog").
+export const revalidate = 60;
 
 export default async function HomePage() {
   const { featured, topRated, categories } = await getHomeData();

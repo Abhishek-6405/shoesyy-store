@@ -58,7 +58,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               exit={{ opacity: 0, y: 15, scale: 0.95 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               role="status"
-              className={`pointer-events-auto relative overflow-hidden flex items-center justify-between p-4 rounded-2xl shadow-xl border backdrop-blur-md transition-colors ${
+              className={`pointer-events-auto relative overflow-hidden flex items-center justify-between p-4 rounded-2xl shadow-xl border transition-colors ${
                 t.type === "success"
                   ? "bg-white/95 text-emerald-950 border-emerald-200 dark:bg-zinc-900/95 dark:text-emerald-100 dark:border-emerald-800/60"
                   : t.type === "error"

@@ -31,7 +31,15 @@ export const productSchema = z.object({
   isActive: z.boolean().default(true).optional(),
 });
 
-export const productUpdateSchema = productSchema.partial();
+// Partial updates must not inherit create-time defaults (otherwise `{ isActive: true }`
+// would silently reset stock to 10 and featured to false).
+export const productUpdateSchema = productSchema
+  .extend({
+    stock: z.coerce.number().int().min(0, "Stock cannot be negative").optional(),
+    featured: z.boolean().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .partial();
 export type ProductInput = z.infer<typeof productSchema>;
 
 // Categories

@@ -1,12 +1,11 @@
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getShopFacets, getShopProducts } from "@/lib/catalog";
 import { Container } from "@/components/ui/container";
 import { ShopFilters } from "@/components/storefront/shop-filters";
 import { ShopSort } from "@/components/storefront/shop-sort";
 import { ShopProductGrid } from "@/components/storefront/shop-product-grid";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, PackageOpen } from "lucide-react";
-import { Prisma } from "@prisma/client";
 
 interface ShopPageProps {
   searchParams: {
@@ -23,161 +22,33 @@ interface ShopPageProps {
   };
 }
 
-export const revalidate = 30; // ISR 30 seconds
-
+// The page reads searchParams so it renders per request, but its data comes from
+// unstable_cache (tag "catalog", 60s), so repeat filter combinations skip the DB.
 export default async function ShopPage({ searchParams }: ShopPageProps) {
-  const search = searchParams.search?.trim();
-  const brand = searchParams.brand?.trim();
-  const category = searchParams.category?.trim();
-  const size = searchParams.size ? Number(searchParams.size) : undefined;
-  const color = searchParams.color?.trim();
-  const minPrice = searchParams.minPrice ? Number(searchParams.minPrice) : undefined;
-  const maxPrice = searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined;
-  const featured = searchParams.featured === "true";
+  const search = searchParams.search?.trim() || undefined;
+  const category = searchParams.category?.trim() || undefined;
   const sort = searchParams.sort || "newest";
-
   const page = Math.max(1, Number(searchParams.page) || 1);
   const limit = 12;
-  const skip = (page - 1) * limit;
 
-  // Build Prisma where clause (strictly requiring isActive: true)
-  const where: Prisma.ProductWhereInput = {
-    isActive: true,
-  };
-
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { brand: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
-    ];
-  }
-
-  if (brand) {
-    const brands = brand.split(",").map((b) => b.trim()).filter(Boolean);
-    if (brands.length === 1) {
-      where.brand = { equals: brands[0], mode: "insensitive" };
-    } else if (brands.length > 1) {
-      where.brand = { in: brands, mode: "insensitive" };
-    }
-  }
-
-  if (category) {
-    where.category = {
-      OR: [
-        { slug: { equals: category, mode: "insensitive" } },
-        { id: category },
-      ],
-    };
-  }
-
-  if (size && !isNaN(size)) {
-    where.sizes = {
-      has: size,
-    };
-  }
-
-  if (color) {
-    where.colors = {
-      has: color,
-    };
-  }
-
-  if (minPrice !== undefined || maxPrice !== undefined) {
-    where.price = {};
-    if (minPrice !== undefined && !isNaN(minPrice)) {
-      where.price.gte = minPrice;
-    }
-    if (maxPrice !== undefined && !isNaN(maxPrice)) {
-      where.price.lte = maxPrice;
-    }
-  }
-
-  if (featured) {
-    where.featured = true;
-  }
-
-  // Determine sort order
-  let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: "desc" };
-  if (sort === "price-asc") orderBy = { price: "asc" };
-  else if (sort === "price-desc") orderBy = { price: "desc" };
-  else if (sort === "featured") orderBy = { featured: "desc" };
-
-  // Fetch products, total count, categories, and available brands
-  const [totalProducts, rawProducts, allCategories, allActiveProducts] = await Promise.all([
-    prisma.product.count({ where }),
-    prisma.product.findMany({
-      where,
-      include: {
-        category: { select: { id: true, name: true, slug: true } },
-        reviews: { select: { rating: true } },
-      },
-      orderBy,
-      skip,
-      take: limit,
+  const [{ total: totalProducts, products }, facets] = await Promise.all([
+    getShopProducts({
+      search,
+      brand: searchParams.brand?.trim() || undefined,
+      category,
+      size: searchParams.size ? Number(searchParams.size) : undefined,
+      color: searchParams.color?.trim() || undefined,
+      minPrice: searchParams.minPrice ? Number(searchParams.minPrice) : undefined,
+      maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
+      featured: searchParams.featured === "true",
+      sort,
+      page,
+      limit,
     }),
-    prisma.category.findMany({
-      include: {
-        _count: {
-          select: { products: { where: { isActive: true } } },
-        },
-      },
-      orderBy: { name: "asc" },
-    }),
-    prisma.product.findMany({
-      where: { isActive: true },
-      select: { brand: true, sizes: true, colors: true },
-    }),
+    getShopFacets(),
   ]);
 
-  // Aggregate metadata for filters
-  const brandCountMap: Record<string, number> = {};
-  const sizesSet = new Set<number>();
-  const colorsSet = new Set<string>();
-
-  for (const p of allActiveProducts) {
-    brandCountMap[p.brand] = (brandCountMap[p.brand] || 0) + 1;
-    p.sizes.forEach((s) => sizesSet.add(s));
-    p.colors.forEach((c) => colorsSet.add(c));
-  }
-
-  const brandOptions = Object.entries(brandCountMap)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
-
-  const sizeOptions = Array.from(sizesSet).sort((a, b) => a - b);
-  const colorOptions = Array.from(colorsSet).sort();
-
   const totalPages = Math.ceil(totalProducts / limit);
-
-  // Format products
-  let products = rawProducts.map((p) => {
-    const reviewCount = p.reviews.length;
-    const avg =
-      reviewCount > 0
-        ? p.reviews.reduce((acc, r) => acc + r.rating, 0) / reviewCount
-        : 4.8;
-    return {
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      brand: p.brand,
-      price: Number(p.price),
-      stock: p.stock,
-      images: p.images,
-      sizes: p.sizes,
-      colors: p.colors,
-      isFeatured: p.featured,
-      category: p.category,
-      averageRating: avg,
-      reviewCount: reviewCount || 3,
-    };
-  });
-
-  // Client-side sort if rating requested
-  if (sort === "rating") {
-    products = products.sort((a, b) => b.averageRating - a.averageRating);
-  }
 
   // Build pagination links helper
   const createPageUrl = (pageNumber: number) => {
@@ -214,15 +85,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <ShopFilters
-            categories={allCategories.map((c) => ({
-              id: c.id,
-              name: c.name,
-              slug: c.slug,
-              count: c._count.products,
-            }))}
-            brands={brandOptions}
-            sizes={sizeOptions}
-            colors={colorOptions}
+            categories={facets.categories}
+            brands={facets.brands}
+            sizes={facets.sizes}
+            colors={facets.colors}
           />
 
           {/* Product Grid Area */}

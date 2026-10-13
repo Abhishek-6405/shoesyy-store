@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { productUpdateSchema } from "@/lib/validations";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
+import { revalidateCatalog } from "@/lib/catalog";
 import { slugify } from "@/lib/utils";
 
 interface Params {
@@ -102,6 +103,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       },
     });
 
+    revalidateCatalog();
     return successResponse({
       ...updated,
       price: Number(updated.price),
@@ -143,6 +145,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       });
     }
 
+    revalidateCatalog();
     return successResponse({
       message: `Product "${existing.name}" ${permanent ? "permanently deleted" : "deactivated / soft-deleted"} successfully`,
       deletedId: id,

@@ -19,6 +19,7 @@ import {
   Minus,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { loaderFor } from "@/lib/image";
 import { useCartStore } from "@/lib/store/cart";
 import { useWishlist } from "@/lib/hooks/use-wishlist";
 import { useToast } from "@/components/ui/toast";
@@ -181,18 +182,19 @@ export function ProductView({ product }: ProductDetailProps) {
               >
                 <Image
                   src={currentImage}
+                  loader={loaderFor(currentImage)}
                   alt={product.name}
                   fill
-                  priority
+                  priority={selectedImageIndex === 0}
                   className="object-cover object-center transition-transform duration-500 hover:scale-110 cursor-zoom-in"
-                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  sizes="(max-width: 1024px) 100vw, 720px"
                 />
               </motion.div>
             </AnimatePresence>
 
             {/* Badges */}
             <div className="absolute top-4 left-4 flex flex-col gap-2 z-10 pointer-events-none">
-              <span className="px-3 py-1 rounded-md bg-zinc-900/90 text-white text-xs font-black uppercase tracking-wider backdrop-blur-md">
+              <span className="px-3 py-1 rounded-md bg-zinc-900/90 text-white               text-xs font-black uppercase tracking-wider">
                 {product.brand}
               </span>
               {product.isFeatured && (
@@ -207,7 +209,7 @@ export function ProductView({ product }: ProductDetailProps) {
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.85 }}
               onClick={() => toggleWishlist(product.id, product.name)}
-              className={`absolute top-4 right-4 p-3 rounded-full backdrop-blur-md transition-all shadow-md z-10 ${
+              className={`absolute top-4 right-4 p-3 rounded-full transition-colors shadow-md z-10 ${
                 isSaved
                   ? "bg-rose-50 text-rose-500 dark:bg-rose-950 dark:text-rose-400"
                   : "bg-white/90 text-zinc-600 hover:text-rose-500 dark:bg-zinc-900/90 dark:text-zinc-300"
@@ -237,6 +239,7 @@ export function ProductView({ product }: ProductDetailProps) {
                 >
                   <Image
                     src={img}
+                    loader={loaderFor(img)}
                     alt={`${product.name} thumbnail ${idx + 1}`}
                     fill
                     className="object-cover"

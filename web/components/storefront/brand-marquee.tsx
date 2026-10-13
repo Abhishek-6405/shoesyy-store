@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
+import { useInView } from "framer-motion";
 import { Container } from "@/components/ui/container";
 
 interface BrandItem {
@@ -16,6 +17,9 @@ interface BrandMarqueeProps {
 export function BrandMarquee({ brands }: BrandMarqueeProps) {
   // Duplicate brands array to make a seamless infinite loop
   const marqueeItems = [...brands, ...brands, ...brands, ...brands];
+  const viewportRef = useRef<HTMLDivElement>(null);
+  // Pause the CSS transform animation while the strip is offscreen.
+  const inView = useInView(viewportRef);
 
   return (
     <section className="py-6 border-b border-zinc-200/60 dark:border-zinc-800/60 overflow-hidden bg-white/50 dark:bg-zinc-950/50">
@@ -26,8 +30,14 @@ export function BrandMarquee({ brands }: BrandMarqueeProps) {
       </Container>
 
       {/* Marquee viewport */}
-      <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
-        <div className="flex w-max gap-4 animate-marquee hover:[animation-play-state:paused]">
+      <div
+        ref={viewportRef}
+        className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]"
+      >
+        <div
+          className="flex w-max gap-4 animate-marquee will-change-transform hover:[animation-play-state:paused]"
+          style={inView ? undefined : { animationPlayState: "paused" }}
+        >
           {marqueeItems.map((b, idx) => (
             <Link
               key={`${b.name}-${idx}`}

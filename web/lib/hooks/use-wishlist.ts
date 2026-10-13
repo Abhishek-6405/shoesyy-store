@@ -1,39 +1,28 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/toast";
+import { useWishlistStore } from "@/lib/store/wishlist";
 
 export function useWishlist() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id ?? null;
   const { success, error: toastError } = useToast();
-  const [wishlistProductIds, setWishlistProductIds] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchWishlist = useCallback(async () => {
-    if (!session?.user) {
-      setWishlistProductIds(new Set());
-      return;
-    }
+  const wishlistProductIds = useWishlistStore((s) => s.ids);
+  const isLoading = useWishlistStore((s) => s.isLoading);
+  const load = useWishlistStore((s) => s.load);
+  const setSaved = useWishlistStore((s) => s.setSaved);
 
-    try {
-      setIsLoading(true);
-      const res = await fetch("/api/wishlist");
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        const ids = new Set<string>(json.data.map((item: { productId: string }) => item.productId));
-        setWishlistProductIds(ids);
-      }
-    } catch (err) {
-      console.error("Failed to fetch wishlist", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [session]);
-
+  // Keyed on the user id (a string), not the session object, so session refreshes
+  // don't refetch. The store dedupes across all mounted hooks.
   useEffect(() => {
-    fetchWishlist();
-  }, [fetchWishlist]);
+    if (status === "loading") return;
+    load(userId);
+  }, [userId, status, load]);
+
+  const fetchWishlist = useCallback(() => load(userId, true), [load, userId]);
 
   const isInWishlist = useCallback(
     (productId: string) => wishlistProductIds.has(productId),
@@ -42,23 +31,15 @@ export function useWishlist() {
 
   const toggleWishlist = useCallback(
     async (productId: string, productName?: string) => {
-      if (!session?.user) {
+      if (!userId) {
         toastError("Please sign in to save items to your wishlist");
         return false;
       }
 
-      const isSaved = wishlistProductIds.has(productId);
+      const isSaved = useWishlistStore.getState().ids.has(productId);
 
       // Optimistic update
-      setWishlistProductIds((prev) => {
-        const next = new Set(prev);
-        if (isSaved) {
-          next.delete(productId);
-        } else {
-          next.add(productId);
-        }
-        return next;
-      });
+      setSaved(productId, !isSaved);
 
       try {
         if (isSaved) {
@@ -77,20 +58,12 @@ export function useWishlist() {
         return true;
       } catch {
         // Rollback optimistic update
-        setWishlistProductIds((prev) => {
-          const next = new Set(prev);
-          if (isSaved) {
-            next.add(productId);
-          } else {
-            next.delete(productId);
-          }
-          return next;
-        });
+        setSaved(productId, isSaved);
         toastError("Could not update wishlist. Please try again.");
         return false;
       }
     },
-    [session, wishlistProductIds, success, toastError]
+    [userId, setSaved, success, toastError]
   );
 
   return {

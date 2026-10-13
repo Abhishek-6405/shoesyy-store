@@ -40,7 +40,7 @@ interface TopProductItem {
   revenue: number;
 }
 
-interface DashboardChartsProps {
+export interface DashboardChartsProps {
   timeline: TimelineItem[];
   ordersByStatus: StatusItem[];
   topSellingProducts: TopProductItem[];

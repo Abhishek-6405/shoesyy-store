@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -10,7 +10,26 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { Flame, ShieldCheck, UserCheck, ArrowRight, Lock, Mail } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+// useSearchParams() needs a Suspense boundary for static prerendering.
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<AuthFormSkeleton />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function AuthFormSkeleton() {
+  return (
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12" aria-busy="true">
+      <Skeleton className="h-[560px] w-full max-w-md rounded-3xl" />
+    </div>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { success, error: toastError } = useToast();

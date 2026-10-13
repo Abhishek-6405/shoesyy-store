@@ -2,8 +2,10 @@ import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { verifyRazorpayPaymentSchema } from "@/lib/validations";
-import { verifyRazorpaySignature } from "@/lib/razorpay";
+import { verifyRazorpaySignature, razorpayInstance } from "@/lib/razorpay";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
+import { placeOrder, serializeOrder } from "@/lib/orders";
+import { revalidateCatalog } from "@/lib/catalog";
 import { OrderStatus, PaymentMethod, PaymentStatus } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
@@ -11,6 +13,10 @@ export async function POST(req: NextRequest) {
     const { user, error, status } = await requireAuth();
     if (error || !user) {
       return errorResponse(error || "Unauthorized", status);
+    }
+
+    if (!razorpayInstance) {
+      return errorResponse("Razorpay is not configured on this server.", 503);
     }
 
     const body = await req.json();
@@ -30,98 +36,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { orderData } = validated;
-    const productIds = orderData.items.map((i) => i.productId);
+    // Replay protection: one Razorpay order can only ever create one store order.
+    const alreadyUsed = await prisma.order.findFirst({
+      where: { razorpayOrderId: validated.razorpayOrderId },
+      select: { id: true },
+    });
+    if (alreadyUsed) {
+      return errorResponse("This payment has already been used for an order.", 409);
+    }
 
-    // Commit order and stock decrement in an interactive transaction
-    const finalOrder = await prisma.$transaction(async (tx) => {
-      const products = await tx.product.findMany({
-        where: {
-          id: { in: productIds },
-          isActive: true,
-        },
-      });
+    // The signature only proves the payment belongs to the Razorpay order; the amount
+    // charged must also match the cart being ordered now.
+    const rzpOrder = await razorpayInstance.orders.fetch(validated.razorpayOrderId);
 
-      const productMap = new Map(products.map((p) => [p.id, p]));
-      let grandTotal = 0;
-      const orderItemsToCreate: Array<{
-        productId: string;
-        name: string;
-        price: number;
-        size: number;
-        quantity: number;
-        image: string;
-      }> = [];
-
-      for (const item of orderData.items) {
-        const product = productMap.get(item.productId);
-        if (!product || !product.isActive) {
-          throw new Error(`Product ${item.productId} is unavailable or inactive`);
-        }
-
-        if (product.stock < item.quantity) {
-          throw new Error(`Insufficient stock for ${product.name}`);
-        }
-
-        const unitPrice = Number(product.price);
-        grandTotal += unitPrice * item.quantity;
-
-        await tx.product.update({
-          where: { id: product.id },
-          data: {
-            stock: { decrement: item.quantity },
-          },
-        });
-
-        orderItemsToCreate.push({
-          productId: product.id,
-          name: product.name,
-          price: unitPrice,
-          size: item.size,
-          quantity: item.quantity,
-          image: product.images[0] || "",
-        });
-      }
-
-      const timestamp = Date.now().toString().slice(-6);
-      const randomDigits = Math.floor(1000 + Math.random() * 9000);
-      const orderNumber = `ORD-RZP-${timestamp}-${randomDigits}`;
-
-      return tx.order.create({
-        data: {
-          orderNumber,
-          userId: user.id,
-          customerName: orderData.shippingAddress.fullName,
-          customerEmail: user.email || "",
-          customerPhone: orderData.shippingAddress.phone,
-          shippingAddress: orderData.shippingAddress,
-          totalAmount: grandTotal,
-          status: OrderStatus.PROCESSING,
-          paymentMethod: PaymentMethod.RAZORPAY,
-          paymentStatus: PaymentStatus.COMPLETED,
-          razorpayOrderId: validated.razorpayOrderId,
-          razorpayPaymentId: validated.razorpayPaymentId,
-          items: {
-            create: orderItemsToCreate,
-          },
-        },
-        include: {
-          items: true,
-        },
-      });
+    const finalOrder = await placeOrder({
+      userId: user.id,
+      email: user.email || "",
+      items: validated.orderData.items,
+      shippingAddress: validated.orderData.shippingAddress,
+      paymentMethod: PaymentMethod.RAZORPAY,
+      paymentStatus: PaymentStatus.COMPLETED,
+      status: OrderStatus.PROCESSING,
+      orderNumberPrefix: "ORD-RZP",
+      razorpayOrderId: validated.razorpayOrderId,
+      razorpayPaymentId: validated.razorpayPaymentId,
+      expectedAmountPaise: Number(rzpOrder.amount),
     });
 
-    return successResponse(
-      {
-        ...finalOrder,
-        totalAmount: Number(finalOrder.totalAmount),
-        items: finalOrder.items.map((i) => ({
-          ...i,
-          price: Number(i.price),
-        })),
-      },
-      201
-    );
+    revalidateCatalog();
+    return successResponse(serializeOrder(finalOrder), 201);
   } catch (err) {
     return handleApiError(err);
   }

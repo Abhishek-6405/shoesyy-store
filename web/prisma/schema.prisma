@@ -5,7 +5,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // Load relations with a single JOIN query instead of one round-trip per relation.
+  previewFeatures = ["relationJoins"]
 }
 
 enum Role {
@@ -89,6 +91,11 @@ model Product {
   @@index([isActive])
   @@index([price])
   @@index([createdAt])
+  @@index([isActive, createdAt])
+  @@index([isActive, price])
+  @@index([isActive, featured])
+  @@index([sizes], type: Gin)
+  @@index([colors], type: Gin)
   @@map("products")
 }
 
@@ -114,6 +121,7 @@ model Order {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([userId, createdAt])
   @@map("orders")
 }
 

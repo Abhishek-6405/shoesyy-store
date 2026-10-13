@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion, useInView } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -11,6 +11,9 @@ import { Container } from "@/components/ui/container";
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  // Pause the infinite loops while the hero is scrolled out of view.
+  const inView = useInView(containerRef, { margin: "100px 0px" });
+  const loop = !shouldReduceMotion && inView;
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -51,12 +54,12 @@ export function HeroSection() {
                   initial={
                     shouldReduceMotion
                       ? { opacity: 0 }
-                      : { opacity: 0, y: 28, filter: "blur(4px)" }
+                      : { opacity: 0, y: 28 }
                   }
                   animate={
                     shouldReduceMotion
                       ? { opacity: 1 }
-                      : { opacity: 1, y: 0, filter: "blur(0px)" }
+                      : { opacity: 1, y: 0 }
                   }
                   transition={{
                     duration: 0.5,
@@ -160,40 +163,37 @@ export function HeroSection() {
             <div className="relative w-full aspect-square max-w-lg">
               {/* Animated Accent Shape behind the shoe */}
               <motion.div
-                style={shouldReduceMotion ? {} : { rotate: accentRotate }}
+                style={shouldReduceMotion ? { opacity: 0.45 } : { rotate: accentRotate }}
                 animate={
-                  shouldReduceMotion
-                    ? {}
-                    : {
+                  loop
+                    ? {
                         scale: [0.95, 1.05, 0.95],
                         opacity: [0.35, 0.55, 0.35],
                       }
+                    : undefined
                 }
                 transition={{
                   duration: 6,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute inset-0 bg-gradient-to-tr from-brand-600 to-amber-500 rounded-full blur-3xl transform -rotate-12"
+                className="absolute inset-0 bg-gradient-to-tr from-brand-600 to-amber-500 rounded-full blur-3xl will-change-transform"
               />
 
-              {/* Floating Showcase Container */}
+              {/* Parallax wrapper (scroll-linked) */}
               <motion.div
                 style={shouldReduceMotion ? {} : { y: imageY }}
-                animate={
-                  shouldReduceMotion
-                    ? {}
-                    : {
-                        y: [-6, 6, -6],
-                      }
+                className="relative z-10 w-full h-full"
+              >
+              {/* Floating Showcase Container (gentle loop) */}
+              <motion.div
+                animate={loop ? { y: [-6, 6, -6] } : { y: 0 }}
+                transition={
+                  loop
+                    ? { duration: 5, repeat: Infinity, ease: "easeInOut" }
+                    : { duration: 0.3 }
                 }
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  repeatType: "mirror",
-                  ease: "easeInOut",
-                }}
-                className="relative z-10 w-full h-full rounded-3xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md p-4 shadow-2xl"
+                className="relative w-full h-full rounded-3xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 p-4 shadow-2xl will-change-transform"
               >
                 <div className="relative w-full h-full rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 group">
                   <Image
@@ -211,7 +211,7 @@ export function HeroSection() {
                   initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
                   animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-xl flex items-center justify-between"
+                  className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-zinc-800 shadow-xl flex items-center justify-between"
                 >
                   <div>
                     <span className="text-[10px] font-black uppercase tracking-wider text-brand-600 block">
@@ -225,6 +225,7 @@ export function HeroSection() {
                     ₹11,999
                   </span>
                 </motion.div>
+              </motion.div>
               </motion.div>
             </div>
           </div>
