@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ShoppingBag,
   Heart,
@@ -14,9 +15,12 @@ import {
   Package,
   ShieldAlert,
   Flame,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store/cart";
 import { useWishlist } from "@/lib/hooks/use-wishlist";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 
@@ -24,8 +28,10 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const { theme, toggleTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -37,6 +43,11 @@ export function Navbar() {
 
   useEffect(() => {
     setMounted(true);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Do not render storefront navbar inside admin portal
@@ -61,23 +72,34 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80 transition-colors">
+    <header
+      className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md shadow-sm border-b border-zinc-200/80 dark:border-zinc-800/80 py-1"
+          : "bg-white/70 dark:bg-zinc-950/70 backdrop-blur-sm border-b border-zinc-200/40 dark:border-zinc-800/40 py-2.5"
+      }`}
+    >
       <Container>
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-4">
           {/* Mobile menu trigger */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 rounded-lg"
             aria-label="Toggle navigation menu"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white shadow-md shadow-brand-500/30 group-hover:scale-105 transition-transform">
+            <motion.div
+              whileHover={{ rotate: 12, scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white shadow-md shadow-brand-500/30"
+            >
               <Flame className="w-5 h-5 fill-current" />
-            </div>
+            </motion.div>
             <div className="flex flex-col">
               <span className="font-display text-2xl sm:text-3xl font-black italic tracking-wider text-zinc-900 dark:text-white leading-none">
                 SHOESY<span className="text-brand-500">.</span>
@@ -88,17 +110,36 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav Links with Sliding Active Underline */}
           <nav className="hidden md:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname === link.href ||
+                    (link.href !== "/" && pathname.startsWith(link.href.split("?")[0]));
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors py-1 ${
+                    isActive
+                      ? "text-brand-600 dark:text-brand-400"
+                      : "text-zinc-600 dark:text-zinc-300 hover:text-brand-500 dark:hover:text-brand-400"
+                  }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeNavIndicator"
+                      className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-brand-500 rounded-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Search Bar (Desktop) */}
@@ -111,47 +152,80 @@ export function Navbar() {
               placeholder="Search kicks, brands..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 text-xs font-medium rounded-full bg-zinc-100 dark:bg-zinc-900 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-zinc-950 focus:outline-none transition-all placeholder:text-zinc-400"
+              className="w-full h-9 pl-9 pr-4 text-xs font-medium rounded-full bg-zinc-100/80 dark:bg-zinc-900/80 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-zinc-950 focus:outline-none transition-all placeholder:text-zinc-400"
             />
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 pointer-events-none" />
           </form>
 
           {/* Action Icons */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             {/* Search Icon (Mobile / Tablet) */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="lg:hidden p-2.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+              className="lg:hidden p-2 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
               aria-label="Search"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4" />
+            </button>
+
+            {/* Dark/Light Mode Toggle with Smooth Icon Morph */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-zinc-600 dark:text-zinc-300 hover:text-brand-500 dark:hover:text-brand-400 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+              aria-label="Toggle dark/light theme"
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={theme}
+                  initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                  animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                  exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-zinc-700" />
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </button>
 
             {/* Wishlist Link */}
             <Link
               href="/wishlist"
-              className="relative p-2.5 text-zinc-600 dark:text-zinc-300 hover:text-rose-500 dark:hover:text-rose-400 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+              className="relative p-2 text-zinc-600 dark:text-zinc-300 hover:text-rose-500 dark:hover:text-rose-400 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
               aria-label="View Wishlist"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4" />
               {mounted && wishlistCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-black bg-rose-500 text-white rounded-full px-1 shadow-sm">
+                <span className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center text-[9px] font-black bg-rose-500 text-white rounded-full px-1 shadow-sm">
                   {wishlistCount}
                 </span>
               )}
             </Link>
 
-            {/* Cart Bag Icon with Drawer Trigger */}
+            {/* Cart Bag Icon with Animated Bounce Badge */}
             <button
               onClick={openCart}
-              className="relative p-2.5 text-zinc-600 dark:text-zinc-300 hover:text-brand-500 dark:hover:text-brand-400 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+              className="relative p-2 text-zinc-600 dark:text-zinc-300 hover:text-brand-500 dark:hover:text-brand-400 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
               aria-label="Open Shopping Bag"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-4 h-4" />
               {mounted && cartItemCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-black bg-brand-500 text-white rounded-full px-1 shadow-sm animate-in zoom-in">
-                  {cartItemCount}
-                </span>
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={cartItemCount}
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{ scale: [1, 1.35, 1], opacity: 1 }}
+                    exit={{ scale: 0.4, opacity: 0 }}
+                    transition={{ duration: 0.3, type: "spring", stiffness: 450, damping: 20 }}
+                    className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center text-[9px] font-black bg-brand-500 text-white rounded-full px-1 shadow-sm"
+                  >
+                    {cartItemCount}
+                  </motion.span>
+                </AnimatePresence>
               )}
             </button>
 
@@ -159,10 +233,10 @@ export function Navbar() {
             {mounted && session?.user?.role === "ADMIN" && (
               <Link
                 href="/admin"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-400 dark:bg-brand-950/60 dark:hover:bg-brand-900/60 rounded-xl border border-brand-200 dark:border-brand-800 transition-colors"
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-400 dark:bg-brand-950/60 dark:hover:bg-brand-900/60 rounded-lg border border-brand-200 dark:border-brand-800 transition-colors"
                 title="Go to Admin Dashboard"
               >
-                <ShieldAlert className="w-3.5 h-3.5" />
+                <ShieldAlert className="w-3 h-3" />
                 Admin
               </Link>
             )}
@@ -173,10 +247,10 @@ export function Navbar() {
                 <div>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                    className="flex items-center gap-2 p-1 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                     aria-label="User menu"
                   >
-                    <div className="w-8 h-8 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-xs border border-brand-500/20">
+                    <div className="w-7 h-7 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-xs border border-brand-500/20">
                       {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || "U"}
                     </div>
                   </button>
@@ -188,7 +262,13 @@ export function Navbar() {
                         className="fixed inset-0 z-40"
                         onClick={() => setIsUserMenuOpen(false)}
                       />
-                      <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-zinc-200 dark:border-zinc-800 p-2 z-50 animate-in fade-in zoom-in-95">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-zinc-200 dark:border-zinc-800 p-2 z-50"
+                      >
                         <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
                           <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
                             {session.user.name || "Customer"}
@@ -244,12 +324,12 @@ export function Navbar() {
                             Sign Out
                           </button>
                         </div>
-                      </div>
+                      </motion.div>
                     </>
                   )}
                 </div>
               ) : (
-                <Button size="sm" asChild className="hidden sm:inline-flex">
+                <Button size="sm" asChild className="hidden sm:inline-flex h-8 text-xs font-bold">
                   <Link href="/login">Sign In</Link>
                 </Button>
               )}
@@ -259,7 +339,7 @@ export function Navbar() {
 
         {/* Mobile Search Overlay */}
         {isSearchOpen && (
-          <div className="lg:hidden pb-4 pt-1 animate-in slide-in-from-top-2">
+          <div className="lg:hidden pb-3 pt-1 animate-in slide-in-from-top-2">
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
@@ -267,69 +347,77 @@ export function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="w-full h-11 pl-11 pr-4 text-sm rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:border-brand-500 transition-all"
+                className="w-full h-10 pl-10 pr-4 text-xs rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:border-brand-500 transition-all"
               />
-              <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-3.5 pointer-events-none" />
+              <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
             </form>
           </div>
         )}
 
-        {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4">
-            <nav className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
+        {/* Animated Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="md:hidden overflow-hidden border-t border-zinc-200 dark:border-zinc-800"
+            >
+              <div className="py-4 flex flex-col gap-1.5">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
 
-              <div className="pt-3 mt-2 border-t border-zinc-200 dark:border-zinc-800 flex flex-col gap-2 px-2">
-                {status === "authenticated" ? (
-                  <>
-                    <Link
-                      href="/orders"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="px-3 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200 flex items-center gap-2"
-                    >
-                      <Package className="w-4 h-4 text-zinc-400" />
-                      My Orders
-                    </Link>
-                    {session?.user?.role === "ADMIN" && (
+                <div className="pt-3 mt-2 border-t border-zinc-200 dark:border-zinc-800 flex flex-col gap-1 px-2">
+                  {status === "authenticated" ? (
+                    <>
                       <Link
-                        href="/admin"
+                        href="/orders"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="px-3 py-2 text-sm font-semibold text-brand-600 flex items-center gap-2"
+                        className="px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 flex items-center gap-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900"
                       >
-                        <ShieldAlert className="w-4 h-4 text-brand-500" />
-                        Admin Dashboard
+                        <Package className="w-4 h-4 text-zinc-400" />
+                        My Orders
                       </Link>
-                    )}
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        signOut({ callbackUrl: "/" });
-                      }}
-                      className="text-left px-3 py-2 text-sm font-semibold text-rose-600 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <Button asChild onClick={() => setIsMobileMenuOpen(false)}>
-                    <Link href="/login">Sign In</Link>
-                  </Button>
-                )}
+                      {session?.user?.role === "ADMIN" && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="px-3 py-2 text-xs font-semibold text-brand-600 flex items-center gap-2 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40"
+                        >
+                          <ShieldAlert className="w-4 h-4 text-brand-500" />
+                          Admin Dashboard
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          signOut({ callbackUrl: "/" });
+                        }}
+                        className="text-left px-3 py-2 text-xs font-semibold text-rose-600 flex items-center gap-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <Button asChild size="sm" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                      <Link href="/login">Sign In &rarr;</Link>
+                    </Button>
+                  )}
+                </div>
               </div>
-            </nav>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Container>
     </header>
   );

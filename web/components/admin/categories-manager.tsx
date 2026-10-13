@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { categorySchema, CategoryInput } from "@/lib/validations";
@@ -224,8 +225,11 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                 </tr>
               ) : (
                 categories.map((cat) => (
-                  <tr
+                  <motion.tr
                     key={cat.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                     className="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors"
                   >
                     {/* Thumbnail & Name */}
@@ -299,7 +303,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                         </Button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))
               )}
             </tbody>

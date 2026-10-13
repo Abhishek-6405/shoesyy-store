@@ -4,16 +4,14 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
+import { AdminStatCards } from "@/components/admin/admin-stat-cards";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  IndianRupee,
   ShoppingCart,
-  Users,
   Package,
-  AlertTriangle,
   ArrowRight,
-  Sparkles,
+  AlertTriangle,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -193,84 +191,14 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Total Revenue */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-              Total Revenue
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <IndianRupee className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
-            {formatPrice(totalRevenue)}
-          </div>
-          <p className="text-xs text-zinc-400 mt-1 flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-emerald-500" />
-            Excludes cancelled orders
-          </p>
-        </div>
-
-        {/* Total Orders */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-              Total Orders
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
-              <ShoppingCart className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
-            {totalOrders}
-          </div>
-          <p className="text-xs text-zinc-400 mt-1">Across all payment methods</p>
-        </div>
-
-        {/* Total Customers */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-              Registered Customers
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
-              <Users className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
-            {totalCustomers}
-          </div>
-          <p className="text-xs text-zinc-400 mt-1">Buyer accounts in database</p>
-        </div>
-
-        {/* Total Products */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-              Catalog Items
-            </span>
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
-              <Package className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
-            {totalProducts}
-          </div>
-          <div className="mt-1 flex items-center gap-1.5">
-            {lowStockProducts.length > 0 ? (
-              <span className="text-xs font-bold text-rose-500 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" />
-                {lowStockProducts.length} low in stock
-              </span>
-            ) : (
-              <span className="text-xs text-emerald-500">Healthy stock levels</span>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Stat Cards with Animated Count-up and Subtle Stagger */}
+      <AdminStatCards
+        totalRevenue={totalRevenue}
+        totalOrders={totalOrders}
+        totalCustomers={totalCustomers}
+        totalProducts={totalProducts}
+        lowStockCount={lowStockProducts.length}
+      />
 
       {/* Visual Charts: Recharts Component */}
       <DashboardCharts

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Filter, X, RotateCcw, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -71,6 +72,51 @@ export function ShopFilters({
       currentSearch ||
       currentFeatured
   );
+
+  const activeChips: { label: string; onRemove: () => void }[] = [];
+  if (currentCategory) {
+    const catName = categories.find((c) => c.slug === currentCategory)?.name || currentCategory;
+    activeChips.push({
+      label: `Category: ${catName}`,
+      onRemove: () => updateFilters({ category: null }),
+    });
+  }
+  currentBrands.forEach((b) => {
+    activeChips.push({
+      label: `Brand: ${b}`,
+      onRemove: () => handleBrandToggle(b),
+    });
+  });
+  if (currentSize) {
+    activeChips.push({
+      label: `Size: UK ${currentSize}`,
+      onRemove: () => updateFilters({ size: null }),
+    });
+  }
+  if (currentColor) {
+    activeChips.push({
+      label: `Color: ${currentColor}`,
+      onRemove: () => updateFilters({ color: null }),
+    });
+  }
+  if (currentMinPrice) {
+    activeChips.push({
+      label: `Min: ₹${currentMinPrice}`,
+      onRemove: () => updateFilters({ minPrice: null }),
+    });
+  }
+  if (currentMaxPrice) {
+    activeChips.push({
+      label: `Max: ₹${currentMaxPrice}`,
+      onRemove: () => updateFilters({ maxPrice: null }),
+    });
+  }
+  if (currentSearch) {
+    activeChips.push({
+      label: `Search: "${currentSearch}"`,
+      onRemove: () => updateFilters({ search: null }),
+    });
+  }
 
   const FilterContent = (
     <div className="space-y-6">
@@ -251,47 +297,116 @@ export function ShopFilters({
 
   return (
     <>
-      {/* Mobile Drawer Trigger Button */}
-      <div className="lg:hidden flex items-center justify-between gap-3 mb-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsMobileOpen(true)}
-          className="flex items-center gap-2 font-bold text-xs"
-        >
-          <Filter className="w-4 h-4 text-brand-500" />
-          Filter Kicks
-          {hasActiveFilters && (
-            <span className="w-2 h-2 rounded-full bg-brand-500" />
-          )}
-        </Button>
-
-        {hasActiveFilters && (
-          <button
-            onClick={handleClearAll}
-            className="text-xs font-semibold text-rose-500 hover:text-rose-600"
+      {/* Mobile Drawer Trigger Button & Active Chips */}
+      <div className="lg:hidden flex flex-col gap-3 mb-6">
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsMobileOpen(true)}
+            className="flex items-center gap-2 font-bold text-xs"
           >
-            Clear Filters
-          </button>
+            <Filter className="w-4 h-4 text-brand-500" />
+            Filter Kicks
+            {hasActiveFilters && (
+              <span className="w-2 h-2 rounded-full bg-brand-500" />
+            )}
+          </Button>
+
+          {hasActiveFilters && (
+            <button
+              onClick={handleClearAll}
+              className="text-xs font-semibold text-rose-500 hover:text-rose-600"
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
+
+        {/* Mobile Active Filter Chips */}
+        {activeChips.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            <AnimatePresence>
+              {activeChips.map((chip) => (
+                <motion.span
+                  key={chip.label}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm"
+                >
+                  {chip.label}
+                  <button
+                    onClick={chip.onRemove}
+                    className="hover:text-rose-500 transition-colors p-0.5"
+                    aria-label={`Remove filter ${chip.label}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
         )}
       </div>
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar with Active Filter Chips */}
       <div className="hidden lg:block w-64 shrink-0 pr-6">
+        {/* Animated active filter chips for desktop */}
+        {activeChips.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-1.5">
+            <AnimatePresence>
+              {activeChips.map((chip) => (
+                <motion.span
+                  key={chip.label}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm"
+                >
+                  {chip.label}
+                  <button
+                    onClick={chip.onRemove}
+                    className="hover:text-rose-500 transition-colors p-0.5"
+                    aria-label={`Remove filter ${chip.label}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
         <div className="sticky top-28 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm">
           {FilterContent}
         </div>
       </div>
 
-      {/* Mobile Slide-over Drawer */}
-      {isMobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden overflow-hidden">
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setIsMobileOpen(false)}
-          />
-          <div className="fixed inset-y-0 left-0 max-w-full flex pr-10">
-            <div className="w-screen max-w-xs bg-white dark:bg-zinc-950 p-6 overflow-y-auto shadow-2xl flex flex-col justify-between">
+      {/* Animated Mobile Slide-over Drawer with AnimatePresence */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden overflow-hidden flex">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsMobileOpen(false)}
+            />
+
+            {/* Slide Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="relative w-screen max-w-xs bg-white dark:bg-zinc-950 p-6 overflow-y-auto shadow-2xl flex flex-col justify-between z-10"
+            >
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 mb-6">
                   <div className="flex items-center gap-2">
@@ -316,10 +431,10 @@ export function ShopFilters({
                   Apply Filters
                 </Button>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }

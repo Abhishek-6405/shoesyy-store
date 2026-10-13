@@ -83,6 +83,8 @@ export function OrderStatusUpdater({
       ? "default"
       : "warning";
 
+  const isFinalState = currentStatus === OrderStatus.DELIVERED || currentStatus === OrderStatus.CANCELLED;
+
   return (
     <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
       <div className="flex items-center justify-between">
@@ -98,23 +100,44 @@ export function OrderStatusUpdater({
         <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500">
           Update Lifecycle Stage
         </label>
-        <select
-          value={selectedStatus}
-          onChange={(e) => handleStatusChange(e.target.value as OrderStatus)}
-          disabled={isUpdating}
-          className="w-full h-11 px-3 text-sm font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-brand-500 disabled:opacity-50"
-        >
-          <option value="PENDING">PENDING (Order Received)</option>
-          <option value="PROCESSING">PROCESSING (Packing / Warehouse)</option>
-          <option value="SHIPPED">SHIPPED (In Transit)</option>
-          <option value="DELIVERED">DELIVERED (Customer Received)</option>
-          <option value="CANCELLED">CANCELLED (Stock Restored)</option>
-        </select>
+        {isFinalState ? (
+          <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 leading-relaxed font-medium">
+            This order has reached its final state ({currentStatus}) and cannot be transitioned further.
+          </div>
+        ) : (
+          <select
+            value={selectedStatus}
+            onChange={(e) => handleStatusChange(e.target.value as OrderStatus)}
+            disabled={isUpdating}
+            className="w-full h-11 px-3 text-sm font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-brand-500 disabled:opacity-50"
+          >
+            {/* Always include current status */}
+            <option value={currentStatus}>
+              {currentStatus} (Current)
+            </option>
+
+            {/* Allowed next forward transition */}
+            {currentStatus === OrderStatus.PENDING && (
+              <option value="PROCESSING">PROCESSING (Move Forward)</option>
+            )}
+            {currentStatus === OrderStatus.PROCESSING && (
+              <option value="SHIPPED">SHIPPED (Move Forward)</option>
+            )}
+            {currentStatus === OrderStatus.SHIPPED && (
+              <option value="DELIVERED">DELIVERED (Final Delivery)</option>
+            )}
+
+            {/* Cancel option */}
+            <option value="CANCELLED">CANCELLED (Restore Stock)</option>
+          </select>
+        )}
       </div>
 
-      <p className="text-[11px] text-zinc-400">
-        Status transitions notify customer tracking views immediately.
-      </p>
+      {!isFinalState && (
+        <p className="text-[11px] text-zinc-400">
+          Status transitions move strictly forward or to cancellation with inventory restoration.
+        </p>
+      )}
 
       {/* Confirmation Dialog for CANCELLED */}
       {showCancelDialog && (

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { formatPrice } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -272,8 +273,11 @@ export function ProductsTable({
               ) : (
                 products.map((product) => {
                   return (
-                    <tr
+                    <motion.tr
                       key={product.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
                       className={`hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors ${
                         !product.isActive ? "opacity-60 bg-zinc-50/30 dark:bg-zinc-900/40" : ""
                       }`}
@@ -412,7 +416,7 @@ export function ProductsTable({
                           )}
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })
               )}

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Package,
@@ -118,14 +119,23 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                   active
-                    ? "bg-brand-500 text-white shadow-md shadow-brand-500/20 font-bold"
+                    ? "text-white font-bold"
                     : "text-zinc-400 hover:text-white hover:bg-zinc-900"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${active ? "text-white" : "text-zinc-400"}`} />
-                {item.label}
+                {active && (
+                  <motion.div
+                    layoutId="adminSidebarActive"
+                    className="absolute inset-0 bg-brand-500 rounded-xl shadow-md shadow-brand-500/20"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-3">
+                  <Icon className={`w-4 h-4 ${active ? "text-white" : "text-zinc-400"}`} />
+                  {item.label}
+                </span>
               </Link>
             );
           })}

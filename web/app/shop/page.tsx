@@ -1,9 +1,9 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
-import { ProductCard } from "@/components/storefront/product-card";
 import { ShopFilters } from "@/components/storefront/shop-filters";
 import { ShopSort } from "@/components/storefront/shop-sort";
+import { ShopProductGrid } from "@/components/storefront/shop-product-grid";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, PackageOpen } from "lucide-react";
 import { Prisma } from "@prisma/client";
@@ -244,11 +244,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((p) => (
-                    <ProductCard key={p.id} {...p} />
-                  ))}
-                </div>
+                <ShopProductGrid products={products} />
 
                 {/* Pagination */}
                 {totalPages > 1 && (

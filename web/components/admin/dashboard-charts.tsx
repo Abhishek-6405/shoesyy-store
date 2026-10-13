@@ -139,6 +139,9 @@ export function DashboardCharts({
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#revenueGradient)"
+                  isAnimationActive={true}
+                  animationDuration={900}
+                  animationEasing="ease-out"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -171,6 +174,9 @@ export function DashboardCharts({
                   paddingAngle={3}
                   dataKey="count"
                   nameKey="label"
+                  isAnimationActive={true}
+                  animationDuration={900}
+                  animationEasing="ease-out"
                 >
                   {ordersByStatus.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -259,7 +265,15 @@ export function DashboardCharts({
                   return null;
                 }}
               />
-              <Bar dataKey="unitsSold" fill="#ff4d15" radius={[0, 8, 8, 0]} barSize={20} />
+              <Bar
+                dataKey="unitsSold"
+                fill="#ff4d15"
+                radius={[0, 8, 8, 0]}
+                barSize={20}
+                isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

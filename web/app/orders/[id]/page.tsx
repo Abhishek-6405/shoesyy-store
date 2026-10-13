@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils";
 import {
-  CheckCircle2,
   Package,
   MapPin,
   CreditCard,
@@ -18,6 +17,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { OrderStatus } from "@prisma/client";
+import { AnimatedSuccessCheck } from "@/components/storefront/animated-success-check";
 
 interface OrderPageProps {
   params: {
@@ -89,21 +89,19 @@ export default async function OrderDetailPage({
       <Container className="max-w-4xl space-y-8">
         {/* Success Alert Banner */}
         {isSuccess && (
-          <div className="p-6 rounded-3xl bg-emerald-500 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-7 h-7" />
-              </div>
+          <div className="p-6 sm:p-8 rounded-3xl bg-emerald-500 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+              <AnimatedSuccessCheck />
               <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
+                <h2 className="text-2xl font-black uppercase tracking-tight">
                   Order Confirmed!
                 </h2>
-                <p className="text-xs text-white/90 font-medium">
+                <p className="text-xs sm:text-sm text-white/90 font-medium">
                   Thank you! Your sneakers have been reserved and will be dispatched shortly.
                 </p>
               </div>
             </div>
-            <span className="font-mono text-xs font-black bg-black/20 px-3 py-1.5 rounded-full">
+            <span className="font-mono text-xs font-black bg-black/20 px-4 py-2 rounded-full whitespace-nowrap">
               {order.orderNumber}
             </span>
           </div>

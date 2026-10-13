@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Star,
   Heart,
@@ -166,20 +167,31 @@ export function ProductView({ product }: ProductDetailProps) {
   return (
     <div className="space-y-16">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-        {/* Left: Gallery */}
+        {/* Left: Gallery with Crossfade and Zoom */}
         <div className="lg:col-span-7 space-y-4">
           <div className="relative aspect-square w-full rounded-3xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-md">
-            <Image
-              src={currentImage}
-              alt={product.name}
-              fill
-              priority
-              className="object-cover object-center"
-              sizes="(max-width: 1024px) 100vw, 60vw"
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedImageIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="relative w-full h-full overflow-hidden"
+              >
+                <Image
+                  src={currentImage}
+                  alt={product.name}
+                  fill
+                  priority
+                  className="object-cover object-center transition-transform duration-500 hover:scale-110 cursor-zoom-in"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                />
+              </motion.div>
+            </AnimatePresence>
 
             {/* Badges */}
-            <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+            <div className="absolute top-4 left-4 flex flex-col gap-2 z-10 pointer-events-none">
               <span className="px-3 py-1 rounded-md bg-zinc-900/90 text-white text-xs font-black uppercase tracking-wider backdrop-blur-md">
                 {product.brand}
               </span>
@@ -190,8 +202,10 @@ export function ProductView({ product }: ProductDetailProps) {
               )}
             </div>
 
-            {/* Wishlist Button */}
-            <button
+            {/* Animated Wishlist Button */}
+            <motion.button
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.85 }}
               onClick={() => toggleWishlist(product.id, product.name)}
               className={`absolute top-4 right-4 p-3 rounded-full backdrop-blur-md transition-all shadow-md z-10 ${
                 isSaved
@@ -201,11 +215,11 @@ export function ProductView({ product }: ProductDetailProps) {
               aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
             >
               <Heart
-                className={`w-5 h-5 transition-transform active:scale-125 ${
-                  isSaved ? "fill-current" : ""
+                className={`w-5 h-5 transition-transform ${
+                  isSaved ? "fill-current text-rose-500" : ""
                 }`}
               />
-            </button>
+            </motion.button>
           </div>
 
           {/* Thumbnails */}
@@ -218,7 +232,7 @@ export function ProductView({ product }: ProductDetailProps) {
                   className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
                     selectedImageIndex === idx
                       ? "border-brand-500 scale-95 shadow-md"
-                      : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-400"
+                      : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 opacity-70 hover:opacity-100"
                   }`}
                 >
                   <Image
@@ -250,12 +264,14 @@ export function ProductView({ product }: ProductDetailProps) {
                 <span>Sneakers</span>
               )}
 
-              {/* Stock Status */}
+              {/* Stock Status with Pulse */}
               <div>
                 {isOutOfStock ? (
                   <Badge variant="destructive">Out of Stock</Badge>
                 ) : product.stock <= 5 ? (
-                  <Badge variant="warning">Only {product.stock} left in stock</Badge>
+                  <Badge variant="warning" className="animate-pulse">
+                    Only {product.stock} left in stock
+                  </Badge>
                 ) : (
                   <Badge variant="success">In Stock ({product.stock} available)</Badge>
                 )}
@@ -304,7 +320,7 @@ export function ProductView({ product }: ProductDetailProps) {
               </div>
             </div>
 
-            {/* Color Selector */}
+            {/* Animated Color Selector */}
             {product.colors && product.colors.length > 0 && (
               <div className="space-y-2 pt-2">
                 <label className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-white">
@@ -312,23 +328,25 @@ export function ProductView({ product }: ProductDetailProps) {
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((c) => (
-                    <button
+                    <motion.button
                       key={c}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setSelectedColor(c)}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${
                         selectedColor === c
                           ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 border-transparent shadow-sm"
                           : "border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 bg-white dark:bg-zinc-900"
                       }`}
                     >
                       {c}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Size Selector */}
+            {/* Animated Size Selector */}
             <div className="space-y-2 pt-2">
               <div className="flex justify-between items-center text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                 <span>Select Size (UK)</span>
@@ -340,18 +358,20 @@ export function ProductView({ product }: ProductDetailProps) {
                 {product.sizes.map((s) => {
                   const isSelected = selectedSize === s;
                   return (
-                    <button
+                    <motion.button
                       key={s}
                       disabled={isOutOfStock}
+                      whileHover={isOutOfStock ? {} : { scale: 1.05 }}
+                      whileTap={isOutOfStock ? {} : { scale: 0.95 }}
                       onClick={() => setSelectedSize(s)}
-                      className={`h-11 rounded-xl text-xs font-black border transition-all ${
+                      className={`h-11 rounded-xl text-xs font-black border transition-colors ${
                         isSelected
-                          ? "bg-brand-500 text-white border-brand-500 shadow-md shadow-brand-500/20 scale-[1.02]"
+                          ? "bg-brand-500 text-white border-brand-500 shadow-md shadow-brand-500/25"
                           : "border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 bg-white dark:bg-zinc-900"
                       }`}
                     >
                       UK {s}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
@@ -385,28 +405,32 @@ export function ProductView({ product }: ProductDetailProps) {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons with Micro-interactions */}
             <div className="space-y-3 pt-4">
-              <Button
-                disabled={isOutOfStock}
-                onClick={handleAddToCart}
-                size="lg"
-                className="w-full h-14 text-base font-bold shadow-xl shadow-brand-500/20"
-              >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                {isOutOfStock ? "Sold Out" : `Add to Bag • ${formatPrice(product.price * quantity)}`}
-              </Button>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button
+                  disabled={isOutOfStock}
+                  onClick={handleAddToCart}
+                  size="lg"
+                  className="w-full h-14 text-base font-bold shadow-xl shadow-brand-500/20"
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  {isOutOfStock ? "Sold Out" : `Add to Bag • ${formatPrice(product.price * quantity)}`}
+                </Button>
+              </motion.div>
 
-              <Button
-                disabled={isOutOfStock}
-                onClick={handleBuyNow}
-                variant="dark"
-                size="lg"
-                className="w-full h-13 font-bold"
-              >
-                <Zap className="w-4 h-4 mr-2 text-brand-500 fill-current" />
-                Instant Checkout (COD / Online)
-              </Button>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button
+                  disabled={isOutOfStock}
+                  onClick={handleBuyNow}
+                  variant="dark"
+                  size="lg"
+                  className="w-full h-13 font-bold"
+                >
+                  <Zap className="w-4 h-4 mr-2 text-brand-500 fill-current" />
+                  Instant Checkout (COD / Online)
+                </Button>
+              </motion.div>
             </div>
 
             {/* Value markers */}
@@ -437,9 +461,9 @@ export function ProductView({ product }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* Tabs: Description & Reviews */}
+      {/* Tabs: Description & Reviews with Sliding Indicator */}
       <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800">
-        <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-8 mb-8">
+        <div className="flex border-b border-zinc-200 dark:border-zinc-800 gap-8 mb-8 relative">
           <button
             onClick={() => setActiveTab("description")}
             className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors relative ${
@@ -450,7 +474,11 @@ export function ProductView({ product }: ProductDetailProps) {
           >
             Description & Specs
             {activeTab === "description" && (
-              <span className="absolute bottom-0 inset-x-0 h-0.5 bg-brand-500" />
+              <motion.span
+                layoutId="activeProductTab"
+                className="absolute bottom-0 inset-x-0 h-0.5 bg-brand-500 rounded-full"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
             )}
           </button>
 
@@ -464,14 +492,23 @@ export function ProductView({ product }: ProductDetailProps) {
           >
             Customer Reviews ({reviewsList.length})
             {activeTab === "reviews" && (
-              <span className="absolute bottom-0 inset-x-0 h-0.5 bg-brand-500" />
+              <motion.span
+                layoutId="activeProductTab"
+                className="absolute bottom-0 inset-x-0 h-0.5 bg-brand-500 rounded-full"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
             )}
           </button>
         </div>
 
         {/* Tab 1: Description */}
         {activeTab === "description" && (
-          <div className="max-w-3xl space-y-6 text-zinc-600 dark:text-zinc-300 leading-relaxed text-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="max-w-3xl space-y-6 text-zinc-600 dark:text-zinc-300 leading-relaxed text-sm"
+          >
             <p className="text-base text-zinc-800 dark:text-zinc-200 font-medium">
               {product.description}
             </p>
@@ -499,22 +536,30 @@ export function ProductView({ product }: ProductDetailProps) {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Tab 2: Reviews */}
         {activeTab === "reviews" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            {/* Reviews List */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-10"
+          >
+            {/* Reviews List with Stagger */}
             <div className="lg:col-span-7 space-y-4">
               {reviewsList.length === 0 ? (
                 <p className="text-sm text-zinc-500 italic py-6">
                   No reviews yet for this sneaker. Be the first to leave one!
                 </p>
               ) : (
-                reviewsList.map((rev) => (
-                  <div
+                reviewsList.map((rev, idx) => (
+                  <motion.div
                     key={rev.id}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
                     className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800 space-y-2"
                   >
                     <div className="flex items-center justify-between">
@@ -554,7 +599,7 @@ export function ProductView({ product }: ProductDetailProps) {
                         {rev.comment}
                       </p>
                     )}
-                  </div>
+                  </motion.div>
                 ))
               )}
             </div>
@@ -632,7 +677,7 @@ export function ProductView({ product }: ProductDetailProps) {
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

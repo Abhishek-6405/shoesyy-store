@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -171,8 +172,11 @@ export function OrdersTable({
                       : "warning";
 
                   return (
-                    <tr
+                    <motion.tr
                       key={order.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
                       className="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors"
                     >
                       {/* Order Number & Timestamp */}
@@ -271,7 +275,7 @@ export function OrdersTable({
                           </Link>
                         </Button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })
               )}

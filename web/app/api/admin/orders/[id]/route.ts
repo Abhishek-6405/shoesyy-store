@@ -67,13 +67,52 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return errorResponse("Order not found", 404);
     }
 
-    // If order is transitioned to CANCELLED, restore item stocks
+    // Enforce valid forward moves and cancellation rules:
+    // PENDING -> PROCESSING or CANCELLED
+    // PROCESSING -> SHIPPED or CANCELLED
+    // SHIPPED -> DELIVERED or CANCELLED
+    // DELIVERED and CANCELLED are final.
+    if (validated.status !== existingOrder.status) {
+      const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
+        PENDING: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
+        PROCESSING: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
+        SHIPPED: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+        DELIVERED: [],
+        CANCELLED: [],
+      };
+
+      const allowed = allowedTransitions[existingOrder.status] || [];
+      if (!allowed.includes(validated.status)) {
+        if (existingOrder.status === OrderStatus.DELIVERED || existingOrder.status === OrderStatus.CANCELLED) {
+          return errorResponse(
+            `Order ${existingOrder.orderNumber} is already ${existingOrder.status} and cannot be modified.`,
+            400
+          );
+        }
+        return errorResponse(
+          `Invalid transition from ${existingOrder.status} to ${validated.status}. Orders can only progress forward (PENDING → PROCESSING → SHIPPED → DELIVERED) or be cancelled.`,
+          400
+        );
+      }
+    }
+
+    // Atomic transaction: verify status and restore stock ONLY on first transition to CANCELLED
     const updated = await prisma.$transaction(async (tx) => {
-      if (
-        validated.status === OrderStatus.CANCELLED &&
-        existingOrder.status !== OrderStatus.CANCELLED
-      ) {
-        for (const item of existingOrder.items) {
+      const freshOrder = await tx.order.findUnique({
+        where: { id },
+        include: { items: true },
+      });
+
+      if (!freshOrder) {
+        throw new Error("Order not found");
+      }
+
+      if (freshOrder.status === OrderStatus.DELIVERED || freshOrder.status === OrderStatus.CANCELLED) {
+        throw new Error(`Order is in final state (${freshOrder.status}) and cannot be transitioned.`);
+      }
+
+      if (validated.status === OrderStatus.CANCELLED) {
+        for (const item of freshOrder.items) {
           await tx.product.update({
             where: { id: item.productId },
             data: { stock: { increment: item.quantity } },
