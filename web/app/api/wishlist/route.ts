@@ -18,7 +18,10 @@ export async function GET() {
     }
 
     const items = await prisma.wishlist.findMany({
-      where: { userId: user.id },
+      where: {
+        userId: user.id,
+        product: { isActive: true },
+      },
       include: {
         product: {
           include: {
@@ -55,12 +58,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validated = wishlistSchema.parse(body);
 
-    const product = await prisma.product.findUnique({
-      where: { id: validated.productId },
+    const product = await prisma.product.findFirst({
+      where: {
+        id: validated.productId,
+        isActive: true,
+      },
     });
 
     if (!product) {
-      return errorResponse("Product not found", 404);
+      return errorResponse("Product not found or unavailable", 404);
     }
 
     const item = await prisma.wishlist.upsert({

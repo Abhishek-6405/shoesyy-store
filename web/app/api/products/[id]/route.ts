@@ -16,9 +16,10 @@ export async function GET(req: NextRequest, { params }: Params) {
       return errorResponse("Product identifier is required", 400);
     }
 
-    // Lookup by ID or by slug
+    // Lookup by ID or by slug (only active products for public storefront)
     const product = await prisma.product.findFirst({
       where: {
+        isActive: true,
         OR: [{ id }, { slug: id }],
       },
       include: {

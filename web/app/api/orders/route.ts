@@ -52,9 +52,12 @@ export async function POST(req: NextRequest) {
 
     // Run order placement inside an interactive Prisma transaction
     const createdOrder = await prisma.$transaction(async (tx) => {
-      // 1. Fetch live product data from DB
+      // 1. Fetch live active product data from DB
       const products = await tx.product.findMany({
-        where: { id: { in: productIds } },
+        where: {
+          id: { in: productIds },
+          isActive: true,
+        },
       });
 
       const productMap = new Map(products.map((p) => [p.id, p]));
@@ -73,8 +76,8 @@ export async function POST(req: NextRequest) {
       for (const item of validated.items) {
         const product = productMap.get(item.productId);
 
-        if (!product) {
-          throw new Error(`Product with ID "${item.productId}" no longer exists.`);
+        if (!product || !product.isActive) {
+          throw new Error(`Product with ID "${item.productId}" is unavailable or inactive.`);
         }
 
         if (!product.sizes.includes(item.size)) {

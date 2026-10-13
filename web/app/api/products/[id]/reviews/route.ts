@@ -16,6 +16,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 
     const reviews = await prisma.review.findMany({
       where: {
+        product: { isActive: true },
         OR: [{ productId: id }, { product: { slug: id } }],
       },
       include: {
@@ -41,9 +42,10 @@ export async function POST(req: NextRequest, { params }: Params) {
 
     const { id } = params;
 
-    // Find the product by ID or slug
+    // Find the product by ID or slug (only active)
     const product = await prisma.product.findFirst({
       where: {
+        isActive: true,
         OR: [{ id }, { slug: id }],
       },
     });

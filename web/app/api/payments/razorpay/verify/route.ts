@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
     // Commit order and stock decrement in an interactive transaction
     const finalOrder = await prisma.$transaction(async (tx) => {
       const products = await tx.product.findMany({
-        where: { id: { in: productIds } },
+        where: {
+          id: { in: productIds },
+          isActive: true,
+        },
       });
 
       const productMap = new Map(products.map((p) => [p.id, p]));
@@ -52,8 +55,8 @@ export async function POST(req: NextRequest) {
 
       for (const item of orderData.items) {
         const product = productMap.get(item.productId);
-        if (!product) {
-          throw new Error(`Product ${item.productId} no longer found`);
+        if (!product || !product.isActive) {
+          throw new Error(`Product ${item.productId} is unavailable or inactive`);
         }
 
         if (product.stock < item.quantity) {

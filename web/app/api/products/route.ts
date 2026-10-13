@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
 
     const search = searchParams.get("search")?.trim();
+    const ids = searchParams.get("ids")?.split(",").map((i) => i.trim()).filter(Boolean);
     const brand = searchParams.get("brand")?.trim();
     const category = searchParams.get("category")?.trim();
     const size = searchParams.get("size") ? Number(searchParams.get("size")) : undefined;
@@ -23,7 +24,14 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit")) || 12));
     const skip = (page - 1) * limit;
 
-    const where: Prisma.ProductWhereInput = {};
+    const where: Prisma.ProductWhereInput = {
+      isActive: true,
+    };
+
+    // Specific product IDs filter (useful for cart/checkout price revalidation)
+    if (ids && ids.length > 0) {
+      where.id = { in: ids };
+    }
 
     // Search query
     if (search) {

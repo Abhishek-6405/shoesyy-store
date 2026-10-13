@@ -98,12 +98,23 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       return errorResponse("Product not found", 404);
     }
 
-    await prisma.product.delete({
-      where: { id },
-    });
+    const { searchParams } = new URL(req.url);
+    const permanent = searchParams.get("permanent") === "true";
+
+    if (permanent) {
+      await prisma.product.delete({
+        where: { id },
+      });
+    } else {
+      // Soft-delete: mark inactive so historical orders remain intact
+      await prisma.product.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    }
 
     return successResponse({
-      message: `Product "${existing.name}" deleted successfully`,
+      message: `Product "${existing.name}" ${permanent ? "permanently deleted" : "deactivated / soft-deleted"} successfully`,
       deletedId: id,
     });
   } catch (err) {

@@ -28,6 +28,7 @@ export const productSchema = z.object({
   colors: z.array(z.string()).min(1, "At least one color is required"),
   stock: z.coerce.number().int().min(0, "Stock cannot be negative").default(10),
   featured: z.boolean().default(false),
+  isActive: z.boolean().default(true).optional(),
 });
 
 export const productUpdateSchema = productSchema.partial();

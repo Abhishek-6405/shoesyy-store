@@ -28,7 +28,10 @@ export async function POST(req: NextRequest) {
 
     const productIds = validated.items.map((i) => i.productId);
     const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
+      where: {
+        id: { in: productIds },
+        isActive: true,
+      },
     });
 
     const productMap = new Map(products.map((p) => [p.id, p]));
@@ -36,8 +39,8 @@ export async function POST(req: NextRequest) {
 
     for (const item of validated.items) {
       const product = productMap.get(item.productId);
-      if (!product) {
-        return errorResponse(`Product with ID "${item.productId}" no longer exists.`, 404);
+      if (!product || !product.isActive) {
+        return errorResponse(`Product with ID "${item.productId}" is unavailable or inactive.`, 404);
       }
       if (product.stock < item.quantity) {
         return errorResponse(
