@@ -33,7 +33,8 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier || !password) {
+    const trimmedId = identifier.trim();
+    if (!trimmedId || !password) {
       toastError("Please enter your email/username and password");
       return;
     }
@@ -41,13 +42,18 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
       const res = await signIn("credentials", {
-        email: identifier,
+        identifier: trimmedId,
+        email: trimmedId,
         password,
         redirect: false,
       });
 
       if (res?.error) {
-        toastError(res.error);
+        const errorMsg =
+          res.error === "CredentialsSignin"
+            ? "Invalid email/username or password. Please try again."
+            : res.error;
+        toastError(errorMsg);
         setIsLoading(false);
         return;
       }

@@ -17,14 +17,19 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         identifier: { label: "Email or Username", type: "text" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.identifier || !credentials?.password) {
+        const rawIdentifier =
+          credentials?.identifier ||
+          (credentials as Record<string, string | undefined> | undefined)?.email;
+
+        if (!rawIdentifier || !credentials?.password) {
           throw new Error("Please enter your email or username and password");
         }
 
-        const identifier = credentials.identifier.trim();
+        const identifier = rawIdentifier.trim();
 
         // Allow logging in via email or username
         const user = await prisma.user.findFirst({
