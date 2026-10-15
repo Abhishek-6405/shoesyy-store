@@ -230,6 +230,8 @@ export function ProductView({ product }: ProductDetailProps) {
               {product.images.map((img, idx) => (
                 <button
                   key={idx}
+                  aria-label={`View ${product.name} image ${idx + 1}`}
+                  aria-pressed={selectedImageIndex === idx}
                   onClick={() => setSelectedImageIndex(idx)}
                   className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
                     selectedImageIndex === idx
@@ -255,7 +257,7 @@ export function ProductView({ product }: ProductDetailProps) {
         <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             {/* Category & Brand */}
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-500">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
               {product.category ? (
                 <Link
                   href={`/shop?category=${product.category.slug}`}
@@ -303,14 +305,14 @@ export function ProductView({ product }: ProductDetailProps) {
               <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
                 {product.averageRating.toFixed(1)}
               </span>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400">
                 ({reviewsList.length} reviews)
               </span>
             </div>
 
             {/* Price */}
             <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs text-zinc-400 uppercase font-semibold block">
+              <span className="text-xs text-zinc-600 dark:text-zinc-400 uppercase font-semibold block">
                 Price (inclusive of all taxes)
               </span>
               <div className="flex items-baseline gap-3 mt-1">
@@ -327,7 +329,7 @@ export function ProductView({ product }: ProductDetailProps) {
             {product.colors && product.colors.length > 0 && (
               <div className="space-y-2 pt-2">
                 <label className="text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-white">
-                  Colorway: <span className="font-normal text-zinc-500">{selectedColor}</span>
+                  Colorway: <span className="font-normal text-zinc-600 dark:text-zinc-400">{selectedColor}</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((c) => (
@@ -353,7 +355,7 @@ export function ProductView({ product }: ProductDetailProps) {
             <div className="space-y-2 pt-2">
               <div className="flex justify-between items-center text-xs font-black uppercase tracking-wider text-zinc-900 dark:text-white">
                 <span>Select Size (UK)</span>
-                <span className="text-zinc-400 font-semibold cursor-pointer hover:underline">
+                <span className="text-zinc-600 dark:text-zinc-400 font-semibold cursor-pointer hover:underline">
                   Size Guide
                 </span>
               </div>
@@ -430,7 +432,7 @@ export function ProductView({ product }: ProductDetailProps) {
                   size="lg"
                   className="w-full h-13 font-bold"
                 >
-                  <Zap className="w-4 h-4 mr-2 text-brand-500 fill-current" />
+                  <Zap className="w-4 h-4 mr-2 text-brand-700 dark:text-brand-400 fill-current" />
                   Instant Checkout (COD / Online)
                 </Button>
               </motion.div>
@@ -439,25 +441,25 @@ export function ProductView({ product }: ProductDetailProps) {
             {/* Value markers */}
             <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-3 gap-3 text-center">
               <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800">
-                <Truck className="w-5 h-5 mx-auto text-brand-500 mb-1" />
+                <Truck className="w-5 h-5 mx-auto text-brand-700 dark:text-brand-400 mb-1" />
                 <span className="text-[10px] font-bold uppercase block text-zinc-700 dark:text-zinc-300">
                   Free Shipping
                 </span>
-                <span className="text-[9px] text-zinc-400">All India</span>
+                <span className="text-[9px] text-zinc-600 dark:text-zinc-400">All India</span>
               </div>
               <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800">
-                <ShieldCheck className="w-5 h-5 mx-auto text-brand-500 mb-1" />
+                <ShieldCheck className="w-5 h-5 mx-auto text-brand-700 dark:text-brand-400 mb-1" />
                 <span className="text-[10px] font-bold uppercase block text-zinc-700 dark:text-zinc-300">
                   Authentic
                 </span>
-                <span className="text-[9px] text-zinc-400">Verified Drop</span>
+                <span className="text-[9px] text-zinc-600 dark:text-zinc-400">Verified Drop</span>
               </div>
               <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800">
-                <RotateCcw className="w-5 h-5 mx-auto text-brand-500 mb-1" />
+                <RotateCcw className="w-5 h-5 mx-auto text-brand-700 dark:text-brand-400 mb-1" />
                 <span className="text-[10px] font-bold uppercase block text-zinc-700 dark:text-zinc-300">
                   Easy Return
                 </span>
-                <span className="text-[9px] text-zinc-400">30-Day Window</span>
+                <span className="text-[9px] text-zinc-600 dark:text-zinc-400">30-Day Window</span>
               </div>
             </div>
           </div>
@@ -517,23 +519,23 @@ export function ProductView({ product }: ProductDetailProps) {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
               <div className="space-y-1">
-                <span className="text-xs uppercase font-bold text-zinc-400">Brand</span>
+                <span className="text-xs uppercase font-bold text-zinc-600 dark:text-zinc-400">Brand</span>
                 <p className="font-semibold text-zinc-900 dark:text-white">{product.brand}</p>
               </div>
               <div className="space-y-1">
-                <span className="text-xs uppercase font-bold text-zinc-400">Category</span>
+                <span className="text-xs uppercase font-bold text-zinc-600 dark:text-zinc-400">Category</span>
                 <p className="font-semibold text-zinc-900 dark:text-white">
                   {product.category?.name || "Sneakers"}
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-xs uppercase font-bold text-zinc-400">Available Sizes</span>
+                <span className="text-xs uppercase font-bold text-zinc-600 dark:text-zinc-400">Available Sizes</span>
                 <p className="font-semibold text-zinc-900 dark:text-white">
                   UK {product.sizes.join(", ")}
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-xs uppercase font-bold text-zinc-400">Color Palette</span>
+                <span className="text-xs uppercase font-bold text-zinc-600 dark:text-zinc-400">Color Palette</span>
                 <p className="font-semibold text-zinc-900 dark:text-white">
                   {product.colors.join(" / ")}
                 </p>
@@ -553,7 +555,7 @@ export function ProductView({ product }: ProductDetailProps) {
             {/* Reviews List with Stagger */}
             <div className="lg:col-span-7 space-y-4">
               {reviewsList.length === 0 ? (
-                <p className="text-sm text-zinc-500 italic py-6">
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 italic py-6">
                   No reviews yet for this sneaker. Be the first to leave one!
                 </p>
               ) : (
@@ -577,7 +579,7 @@ export function ProductView({ product }: ProductDetailProps) {
                           Verified Buyer
                         </span>
                       </div>
-                      <span className="text-[11px] text-zinc-400">
+                      <span className="text-[11px] text-zinc-600 dark:text-zinc-400">
                         {new Date(rev.createdAt).toLocaleDateString("en-IN", {
                           month: "short",
                           day: "numeric",
@@ -615,7 +617,7 @@ export function ProductView({ product }: ProductDetailProps) {
                 </h3>
                 {!session?.user ? (
                   <div className="text-center py-6 space-y-3">
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">
                       Sign in to your Shoesy account to leave a verified rating and review.
                     </p>
                     <Button size="sm" asChild>
@@ -640,6 +642,8 @@ export function ProductView({ product }: ProductDetailProps) {
                           <button
                             type="button"
                             key={star}
+                            aria-label={`Rate ${star} out of 5 stars`}
+                            aria-pressed={newRating === star}
                             onClick={() => setNewRating(star)}
                             className="p-1 text-amber-500 hover:scale-110 transition-transform"
                           >
@@ -660,7 +664,7 @@ export function ProductView({ product }: ProductDetailProps) {
                       <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                         Review Comments
                       </label>
-                      <textarea
+                      <textarea aria-label="Review comments"
                         rows={4}
                         placeholder="Tell the community how they fit, feel on foot, and look in real life..."
                         value={newComment}

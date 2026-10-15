@@ -1,4 +1,6 @@
 import React from "react";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Manage categories", "SHOESY category management.", undefined, true);
 import prisma from "@/lib/prisma";
 import { CategoriesManager, CategoryItem } from "@/components/admin/categories-manager";
 

@@ -50,13 +50,13 @@ export default function CartPage() {
     return (
       <div className="py-20 sm:py-32">
         <Container className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-400 flex items-center justify-center mx-auto mb-6">
+          <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 flex items-center justify-center mx-auto mb-6">
             <ShoppingBag className="w-10 h-10" />
           </div>
           <h1 className="font-display text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
             Your Bag is Empty
           </h1>
-          <p className="text-sm text-zinc-500 mt-2 mb-8 leading-relaxed">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 mb-8 leading-relaxed">
             You don&apos;t have any sneakers saved in your shopping bag. Explore our latest drops and find your next pair.
           </p>
           <Button size="lg" asChild className="h-13 px-8 font-bold">
@@ -76,7 +76,7 @@ export default function CartPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-6 mb-8 border-b border-zinc-200 dark:border-zinc-800 gap-4">
           <div>
-            <span className="text-xs font-black uppercase tracking-widest text-brand-500">
+            <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400">
               Checkout Bag
             </span>
             <h1 className="font-display text-3xl sm:text-4xl font-black italic uppercase tracking-tight text-zinc-900 dark:text-white">
@@ -108,7 +108,7 @@ export default function CartPage() {
                     </>
                   )}
                 </span>
-                <span className="text-zinc-400">
+                <span className="text-zinc-600 dark:text-zinc-400">
                   {Math.min(100, Math.round((subtotal / shippingThreshold) * 100))}%
                 </span>
               </div>
@@ -156,7 +156,7 @@ export default function CartPage() {
                         >
                           {product?.name || "Product"}
                         </Link>
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400">
                           Size: <span className="font-bold text-zinc-800 dark:text-zinc-200">UK {item.size}</span>
                           {item.color && (
                             <> • Color: <span className="font-bold text-zinc-800 dark:text-zinc-200">{item.color}</span></>
@@ -200,7 +200,7 @@ export default function CartPage() {
 
                       <button
                         onClick={() => removeItem(item.productId, item.size, item.color)}
-                        className="text-zinc-400 hover:text-rose-600 p-2 transition-colors"
+                        className="text-zinc-600 dark:text-zinc-400 hover:text-rose-600 p-2 transition-colors"
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -259,17 +259,17 @@ export default function CartPage() {
                 </Button>
               </div>
 
-              <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2 text-xs text-zinc-500">
+              <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2 text-xs text-zinc-600 dark:text-zinc-400">
                 <div className="flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-brand-500 shrink-0" />
+                  <Truck className="w-4 h-4 text-brand-700 dark:text-brand-400 shrink-0" />
                   <span>Dispatched in 24 hours across India</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-brand-500 shrink-0" />
+                  <ShieldCheck className="w-4 h-4 text-brand-700 dark:text-brand-400 shrink-0" />
                   <span>100% Verified Authentic Sneakers</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RotateCcw className="w-4 h-4 text-brand-500 shrink-0" />
+                  <RotateCcw className="w-4 h-4 text-brand-700 dark:text-brand-400 shrink-0" />
                   <span>30-Day Hassle-Free Returns</span>
                 </div>
               </div>

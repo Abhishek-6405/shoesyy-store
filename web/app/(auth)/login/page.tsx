@@ -90,13 +90,13 @@ function LoginForm() {
     <div className="py-12 sm:py-20">
       <Container className="max-w-md">
         <div className="text-center space-y-2 mb-8">
-          <div className="inline-flex p-3 rounded-2xl bg-brand-500/10 text-brand-500 mb-2">
+          <div className="inline-flex p-3 rounded-2xl bg-brand-500/10 text-brand-700 dark:text-brand-400 mb-2">
             <Flame className="w-8 h-8" />
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-black italic uppercase tracking-tight text-zinc-900 dark:text-white">
             Welcome Back
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-500">
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
             Sign in to access your orders, saved kicks, and express checkout.
           </p>
         </div>
@@ -104,7 +104,7 @@ function LoginForm() {
         {/* Demo Credentials Quick Fill Banner */}
         <div className="p-4 rounded-2xl border border-brand-200 dark:border-brand-900/60 bg-brand-50/50 dark:bg-brand-950/20 mb-6 space-y-3">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-brand-500" />
+            <ShieldCheck className="w-4 h-4 text-brand-700 dark:text-brand-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">
               Live Demo Quick-Access
             </span>
@@ -118,7 +118,7 @@ function LoginForm() {
               onClick={() => handleFillDemo("user")}
               className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-white dark:bg-zinc-900 border border-brand-200 dark:border-brand-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:border-brand-500 transition-colors shadow-sm"
             >
-              <UserCheck className="w-3.5 h-3.5 text-brand-500" />
+              <UserCheck className="w-3.5 h-3.5 text-brand-700 dark:text-brand-400" />
               Use Demo User
             </button>
             <button
@@ -126,7 +126,7 @@ function LoginForm() {
               onClick={() => handleFillDemo("admin")}
               className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-white dark:bg-zinc-900 border border-brand-200 dark:border-brand-800 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:border-brand-500 transition-colors shadow-sm"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-brand-500" />
+              <ShieldCheck className="w-3.5 h-3.5 text-brand-700 dark:text-brand-400" />
               Use Demo Admin
             </button>
           </div>
@@ -142,14 +142,14 @@ function LoginForm() {
               Email or Username
             </label>
             <div className="relative">
-              <Input
+              <Input aria-label="user@shoesy.demo"
                 type="text"
                 placeholder="user@shoesy.demo"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
               />
-              <Mail className="w-4 h-4 text-zinc-400 absolute right-3.5 top-3.5 pointer-events-none" />
+              <Mail className="w-4 h-4 text-zinc-600 dark:text-zinc-400 absolute right-3.5 top-3.5 pointer-events-none" />
             </div>
           </div>
 
@@ -158,14 +158,14 @@ function LoginForm() {
               Password
             </label>
             <div className="relative">
-              <Input
+              <Input aria-label="••••••••"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <Lock className="w-4 h-4 text-zinc-400 absolute right-3.5 top-3.5 pointer-events-none" />
+              <Lock className="w-4 h-4 text-zinc-600 dark:text-zinc-400 absolute right-3.5 top-3.5 pointer-events-none" />
             </div>
           </div>
 
@@ -186,11 +186,11 @@ function LoginForm() {
           </Button>
 
           <div className="text-center pt-2">
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">
               Don&apos;t have an account?{" "}
               <Link
                 href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-                className="font-bold text-brand-500 hover:underline"
+                className="font-bold text-brand-700 dark:text-brand-400 hover:underline"
               >
                 Create Account
               </Link>

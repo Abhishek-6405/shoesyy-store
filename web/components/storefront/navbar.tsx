@@ -23,6 +23,7 @@ import { useWishlist } from "@/lib/hooks/use-wishlist";
 import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { useFocusTrap } from "@/lib/hooks/use-focus-trap";
 
 export function Navbar() {
   const router = useRouter();
@@ -36,6 +37,16 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const mobileRef = useFocusTrap(isMobileMenuOpen, () => setIsMobileMenuOpen(false), "(max-width: 767px)");
+  const accountRef = useFocusTrap(isUserMenuOpen, () => setIsUserMenuOpen(false));
+
+  useEffect(() => {
+    const closeSearch = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsSearchOpen(false);
+    };
+    document.addEventListener("keydown", closeSearch);
+    return () => document.removeEventListener("keydown", closeSearch);
+  }, []);
 
   const cartItemCount = useCartStore((state) => state.getTotalItems());
   const openCart = useCartStore((state) => state.openCart);
@@ -96,15 +107,15 @@ export function Navbar() {
               whileHover={{ rotate: 12, scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="w-9 h-9 rounded-xl bg-brand-500 flex items-center justify-center text-white shadow-md shadow-brand-500/30"
+              className="w-9 h-9 rounded-xl bg-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/30"
             >
               <Flame className="w-5 h-5 fill-current" />
             </motion.div>
             <div className="flex flex-col">
               <span className="font-display text-2xl sm:text-3xl font-black italic tracking-wider text-zinc-900 dark:text-white leading-none">
-                SHOESY<span className="text-brand-500">.</span>
+                SHOESY<span className="text-brand-700 dark:text-brand-400">.</span>
               </span>
-              <span className="text-[9px] uppercase tracking-widest text-zinc-400 font-semibold leading-tight">
+              <span className="text-[9px] uppercase tracking-widest text-zinc-600 dark:text-zinc-400 font-semibold leading-tight">
                 Store
               </span>
             </div>
@@ -148,13 +159,14 @@ export function Navbar() {
             className="hidden lg:flex items-center relative max-w-xs w-full"
           >
             <input
+              aria-label="Search products"
               type="text"
               placeholder="Search kicks, brands..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-9 pl-9 pr-4 text-xs font-medium rounded-full bg-zinc-100/80 dark:bg-zinc-900/80 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-zinc-950 focus:outline-none transition-all placeholder:text-zinc-400"
             />
-            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400 absolute left-3 pointer-events-none" />
           </form>
 
           {/* Action Icons */}
@@ -221,7 +233,7 @@ export function Navbar() {
                     animate={{ scale: [1, 1.35, 1], opacity: 1 }}
                     exit={{ scale: 0.4, opacity: 0 }}
                     transition={{ duration: 0.35, ease: "easeOut", times: [0, 0.5, 1] }}
-                    className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center text-[9px] font-black bg-brand-500 text-white rounded-full px-1 shadow-sm"
+                    className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center text-[9px] font-black bg-brand-700 text-white rounded-full px-1 shadow-sm"
                   >
                     {cartItemCount}
                   </motion.span>
@@ -260,9 +272,15 @@ export function Navbar() {
                     <>
                       <div
                         className="fixed inset-0 z-40"
+                        data-focus-backdrop
                         onClick={() => setIsUserMenuOpen(false)}
                       />
                       <motion.div
+                        ref={accountRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Account"
+                        tabIndex={-1}
                         initial={{ opacity: 0, scale: 0.95, y: -4 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: -4 }}
@@ -273,7 +291,7 @@ export function Navbar() {
                           <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
                             {session.user.name || "Customer"}
                           </p>
-                          <p className="text-[11px] text-zinc-400 truncate">
+                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 truncate">
                             {session.user.email}
                           </p>
                           {session.user.role === "ADMIN" && (
@@ -289,7 +307,7 @@ export function Navbar() {
                             onClick={() => setIsUserMenuOpen(false)}
                             className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                           >
-                            <Package className="w-4 h-4 text-zinc-400" />
+                            <Package className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                             My Orders
                           </Link>
                           <Link
@@ -297,7 +315,7 @@ export function Navbar() {
                             onClick={() => setIsUserMenuOpen(false)}
                             className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                           >
-                            <Heart className="w-4 h-4 text-zinc-400" />
+                            <Heart className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                             Saved Items
                           </Link>
                           {session.user.role === "ADMIN" && (
@@ -306,7 +324,7 @@ export function Navbar() {
                               onClick={() => setIsUserMenuOpen(false)}
                               className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-brand-600 dark:text-brand-400 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40 transition-colors"
                             >
-                              <ShieldAlert className="w-4 h-4 text-brand-500" />
+                              <ShieldAlert className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                               Admin Dashboard
                             </Link>
                           )}
@@ -342,6 +360,7 @@ export function Navbar() {
           <div className="lg:hidden pb-3 pt-1 animate-in slide-in-from-top-2">
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
+                aria-label="Search products"
                 type="text"
                 placeholder="Search kicks, brands..."
                 value={searchQuery}
@@ -349,7 +368,7 @@ export function Navbar() {
                 autoFocus
                 className="w-full h-10 pl-10 pr-4 text-xs rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:border-brand-500 transition-all"
               />
-              <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
+              <Search className="w-4 h-4 text-zinc-600 dark:text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
             </form>
           </div>
         )}
@@ -358,6 +377,11 @@ export function Navbar() {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
+              ref={mobileRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Store navigation"
+              tabIndex={-1}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -365,6 +389,7 @@ export function Navbar() {
               className="md:hidden overflow-hidden border-t border-zinc-200 dark:border-zinc-800"
             >
               <div className="py-4 flex flex-col gap-1.5">
+                <button onClick={() => setIsMobileMenuOpen(false)} className="self-end p-2" aria-label="Close navigation"><X className="w-5 h-5" /></button>
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -384,7 +409,7 @@ export function Navbar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className="px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-200 flex items-center gap-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900"
                       >
-                        <Package className="w-4 h-4 text-zinc-400" />
+                        <Package className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
                         My Orders
                       </Link>
                       {session?.user?.role === "ADMIN" && (
@@ -393,7 +418,7 @@ export function Navbar() {
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="px-3 py-2 text-xs font-semibold text-brand-600 flex items-center gap-2 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-950/40"
                         >
-                          <ShieldAlert className="w-4 h-4 text-brand-500" />
+                          <ShieldAlert className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                           Admin Dashboard
                         </Link>
                       )}

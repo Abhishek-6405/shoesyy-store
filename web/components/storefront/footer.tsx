@@ -196,7 +196,7 @@ export function Footer() {
               </p>
               <form onSubmit={handleSubscribe} className="space-y-2">
                 <div className="relative">
-                  <input
+                  <input aria-label="Newsletter email address"
                     type="email"
                     required
                     placeholder="Enter your email"

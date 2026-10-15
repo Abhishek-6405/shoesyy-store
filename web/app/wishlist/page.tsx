@@ -123,7 +123,7 @@ export default function WishlistPage() {
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between pb-6 mb-8 border-b border-zinc-200 dark:border-zinc-800 gap-4">
           <div>
-            <span className="text-xs font-black uppercase tracking-widest text-brand-500">
+            <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400">
               Personal Vault
             </span>
             <h1 className="font-display text-3xl sm:text-4xl font-black italic uppercase tracking-tight text-zinc-900 dark:text-white">
@@ -134,13 +134,13 @@ export default function WishlistPage() {
 
         {items.length === 0 ? (
           <div className="py-20 sm:py-28 text-center max-w-md mx-auto">
-            <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-400 flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 flex items-center justify-center mx-auto mb-6">
               <Heart className="w-10 h-10" />
             </div>
             <h2 className="font-display text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
               Your Wishlist is Empty
             </h2>
-            <p className="text-sm text-zinc-500 mt-2 mb-8 leading-relaxed">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 mb-8 leading-relaxed">
               Save your favorite sneakers so you never miss a restock or price drop.
             </p>
             <Button size="lg" asChild className="h-13 px-8 font-bold">
@@ -174,7 +174,7 @@ export default function WishlistPage() {
                       />
                       <button
                         onClick={() => handleRemove(item.productId, p.name)}
-                        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 text-zinc-400 hover:text-rose-600 dark:bg-zinc-900/90 shadow-sm"
+                        className="absolute top-3 right-3 p-2 rounded-full bg-white/90 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:bg-zinc-900/90 shadow-sm"
                         aria-label="Remove from wishlist"
                       >
                         <Trash2 className="w-4 h-4" />

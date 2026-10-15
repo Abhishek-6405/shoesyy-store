@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Premium sneakers and performance footwear", "Discover Nike, Adidas, Puma, Asics and more. Curated sneakers, verified stock and prices in INR.", "/");
 import { getHomeData } from "@/lib/catalog";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
@@ -70,7 +72,7 @@ export default async function HomePage() {
           <Container>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
               <div>
-                <span className="text-xs font-black uppercase tracking-widest text-brand-500 flex items-center gap-1.5 mb-1">
+                <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400 flex items-center gap-1.5 mb-1">
                   <Flame className="w-3.5 h-3.5 fill-current" />
                   Hype Collection
                 </span>
@@ -101,13 +103,13 @@ export default async function HomePage() {
           <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
           <Container>
             <div className="relative z-10 max-w-2xl space-y-4">
-              <span className="text-xs font-black uppercase tracking-widest text-brand-500">
+              <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400">
                 Limited Edition Restocks
               </span>
               <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
                 Never Settle For Ordinary Kicks.
               </h2>
-              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
                 Every sneaker in our vault is thoroughly checked for authenticity,
                 boxed in premium packaging, and delivered fast right to your doorstep.
               </p>
@@ -127,7 +129,7 @@ export default async function HomePage() {
           <Container>
             <div className="flex items-center justify-between mb-8">
               <div>
-                <span className="text-xs font-black uppercase tracking-widest text-brand-500 flex items-center gap-1.5 mb-1">
+                <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400 flex items-center gap-1.5 mb-1">
                   <Star className="w-3.5 h-3.5 fill-current" />
                   Community Favorites
                 </span>

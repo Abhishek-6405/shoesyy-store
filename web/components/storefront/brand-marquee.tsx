@@ -24,7 +24,7 @@ export function BrandMarquee({ brands }: BrandMarqueeProps) {
   return (
     <section className="py-6 border-b border-zinc-200/60 dark:border-zinc-800/60 overflow-hidden bg-white/50 dark:bg-zinc-950/50">
       <Container className="mb-4 text-center">
-        <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">
           Trusted Brand Partners • Hover to Pause
         </span>
       </Container>

@@ -1,4 +1,6 @@
 import React from "react";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Edit product", "Update SHOESY product details and availability.", undefined, true);
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/product-form";
@@ -51,7 +53,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         <h1 className="font-display font-black text-3xl uppercase tracking-wider text-zinc-900 dark:text-white">
           Edit Sneaker: {product.name}
         </h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
           Update price, imagery, inventory counts, or catalog visibility.
         </p>
       </div>

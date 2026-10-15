@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <div className="py-24 sm:py-32 flex items-center justify-center">
       <Container className="text-center max-w-lg">
-        <div className="inline-flex p-4 rounded-3xl bg-brand-500/10 text-brand-500 mb-6">
+        <div className="inline-flex p-4 rounded-3xl bg-brand-500/10 text-brand-700 dark:text-brand-400 mb-6">
           <Flame className="w-12 h-12" />
         </div>
         <h1 className="text-7xl sm:text-8xl font-black italic tracking-tighter text-zinc-900 dark:text-white">
@@ -16,7 +16,7 @@ export default function NotFound() {
         <h2 className="text-2xl font-black uppercase tracking-tight mt-2 text-zinc-900 dark:text-white">
           Kicks Not Found
         </h2>
-        <p className="text-sm text-zinc-500 mt-3 leading-relaxed">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-3 leading-relaxed">
           The sneaker or page you&apos;re looking for has already dropped out of stock or doesn&apos;t exist.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">

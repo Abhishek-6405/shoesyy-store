@@ -813,7 +813,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error("❌ Seeding error:", e);
+    console.error("❌ Seeding error:", e instanceof Error ? e.name : "UnknownError");
     process.exit(1);
   })
   .finally(async () => {

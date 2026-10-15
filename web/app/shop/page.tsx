@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Shop sneakers", "Find your next pair by brand, size, color and price. Explore premium sneakers and performance runners.", "/shop");
 import { getShopFacets, getShopProducts } from "@/lib/catalog";
 import { Container } from "@/components/ui/container";
 import { ShopFilters } from "@/components/storefront/shop-filters";
@@ -69,7 +71,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-600 mb-1">
               <span>Vault Catalog</span>
               <span>•</span>
-              <span className="text-zinc-500 font-semibold">{totalProducts} Sneakers</span>
+              <span className="text-zinc-600 dark:text-zinc-400 font-semibold">{totalProducts} Sneakers</span>
             </div>
             <h1 className="font-display text-4xl sm:text-5xl font-black italic uppercase tracking-tight text-zinc-900 dark:text-white">
               {search ? `Results for "${search}"` : category ? `${category.toUpperCase()} SILHOUETTES` : "All Sneakers"}
@@ -95,13 +97,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <div className="flex-1">
             {products.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-24 p-6 rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
-                <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 mb-4">
+                <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 mb-4">
                   <PackageOpen className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold uppercase text-zinc-900 dark:text-white mb-2">
                   No Sneakers Match Your Filters
                 </h3>
-                <p className="text-sm text-zinc-500 max-w-sm mb-6">
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-sm mb-6">
                   Try broadening your search, removing selected sizes, or clearing your brand filters.
                 </p>
                 <Button asChild>

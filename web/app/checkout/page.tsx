@@ -80,7 +80,7 @@ export default function CheckoutPage() {
       try {
         const res = await fetch("/api/payments/razorpay/config");
         const json = await res.json();
-        if (json.success && json.data?.isConfigured) {
+        if (json.success && json.data?.enabled) {
           setRazorpayReady(true);
           setRazorpayKeyId(json.data.keyId);
         }
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
       <div className="py-20 text-center">
         <Container className="max-w-md space-y-4">
           <h1 className="text-2xl font-bold">Your bag is empty</h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Please add items to your cart before proceeding to checkout.
           </p>
           <Button asChild>
@@ -273,7 +273,7 @@ export default function CheckoutPage() {
               {/* Shipping Address */}
               <div className="p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-5">
                 <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                  <Truck className="w-5 h-5 text-brand-500" />
+                  <Truck className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                   <h2 className="text-base font-bold uppercase text-zinc-900 dark:text-white">
                     1. Delivery Address
                   </h2>
@@ -284,7 +284,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       Full Name *
                     </label>
-                    <Input
+                    <Input aria-label="Full name"
                       placeholder="e.g. Rahul Sharma"
                       {...register("fullName")}
                     />
@@ -299,7 +299,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       Phone Number *
                     </label>
-                    <Input
+                    <Input aria-label="Phone number"
                       placeholder="10-digit mobile number"
                       {...register("phone")}
                     />
@@ -314,7 +314,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       Street Address / House / Flat No. *
                     </label>
-                    <Input
+                    <Input aria-label="Street address"
                       placeholder="Flat 402, Highline Residency, Bandra West"
                       {...register("street")}
                     />
@@ -329,7 +329,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       City *
                     </label>
-                    <Input placeholder="Mumbai" {...register("city")} />
+                    <Input aria-label="City" placeholder="Mumbai" {...register("city")} />
                     {errors.city && (
                       <p className="text-[11px] text-rose-500 mt-1 font-semibold">
                         {errors.city.message}
@@ -341,7 +341,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       State *
                     </label>
-                    <Input placeholder="Maharashtra" {...register("state")} />
+                    <Input aria-label="State" placeholder="Maharashtra" {...register("state")} />
                     {errors.state && (
                       <p className="text-[11px] text-rose-500 mt-1 font-semibold">
                         {errors.state.message}
@@ -353,7 +353,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       Postal Code *
                     </label>
-                    <Input placeholder="400050" {...register("postalCode")} />
+                    <Input aria-label="Postal code" placeholder="400050" {...register("postalCode")} />
                     {errors.postalCode && (
                       <p className="text-[11px] text-rose-500 mt-1 font-semibold">
                         {errors.postalCode.message}
@@ -365,7 +365,7 @@ export default function CheckoutPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
                       Country
                     </label>
-                    <Input disabled value="India" {...register("country")} />
+                    <Input aria-label="Country" disabled value="India" {...register("country")} />
                   </div>
                 </div>
               </div>
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
               {/* Payment Method Selector */}
               <div className="p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4">
                 <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                  <CreditCard className="w-5 h-5 text-brand-500" />
+                  <CreditCard className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                   <h2 className="text-base font-bold uppercase text-zinc-900 dark:text-white">
                     2. Payment Method
                   </h2>
@@ -382,6 +382,16 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* COD */}
                   <div
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={paymentMethod === "COD"}
+                    aria-label="Cash on Delivery"
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        event.currentTarget.click();
+                      }
+                    }}
                     onClick={() => setPaymentMethod("COD")}
                     className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
                       paymentMethod === "COD"
@@ -408,13 +418,23 @@ export default function CheckoutPage() {
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-zinc-500 mt-2">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">
                       Pay with cash or UPI upon delivery at your doorstep. 100% verified.
                     </p>
                   </div>
 
                   {/* Razorpay */}
                   <div
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={paymentMethod === "RAZORPAY"}
+                    aria-label="Razorpay test mode"
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        event.currentTarget.click();
+                      }
+                    }}
                     onClick={() => {
                       if (!razorpayReady) {
                         toastError(
@@ -432,7 +452,7 @@ export default function CheckoutPage() {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-brand-500" />
+                        <CreditCard className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                         <span className="text-sm font-bold text-zinc-900 dark:text-white">
                           Razorpay (Test Mode)
                         </span>
@@ -449,7 +469,7 @@ export default function CheckoutPage() {
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-zinc-500 mt-2">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">
                       Cards, UPI, NetBanking, Wallets.
                       {!razorpayReady && (
                         <span className="block text-amber-600 font-semibold mt-1">
@@ -492,7 +512,7 @@ export default function CheckoutPage() {
                         <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
                           {item.product?.name || "Loading..."}
                         </p>
-                        <p className="text-[11px] text-zinc-400">
+                        <p className="text-[11px] text-zinc-600 dark:text-zinc-400">
                           UK {item.size} • Qty: {item.quantity}
                         </p>
                       </div>
@@ -505,13 +525,13 @@ export default function CheckoutPage() {
 
                 {/* Totals */}
                 <div className="space-y-2 pt-2 border-t border-zinc-200 dark:border-zinc-800 text-xs">
-                  <div className="flex justify-between text-zinc-500">
+                  <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span>Subtotal</span>
                     <span className="font-bold text-zinc-800 dark:text-zinc-200">
                       {formatPrice(subtotal)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-zinc-500">
+                  <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span>Shipping</span>
                     <span>
                       {shipping === 0 ? (
@@ -551,8 +571,8 @@ export default function CheckoutPage() {
                   )}
                 </Button>
 
-                <div className="flex items-center gap-2 text-[11px] text-zinc-500 justify-center">
-                  <ShieldCheck className="w-4 h-4 text-brand-500 shrink-0" />
+                <div className="flex items-center gap-2 text-[11px] text-zinc-600 dark:text-zinc-400 justify-center">
+                  <ShieldCheck className="w-4 h-4 text-brand-700 dark:text-brand-400 shrink-0" />
                   <span>Prices re-validated directly against database</span>
                 </div>
               </div>

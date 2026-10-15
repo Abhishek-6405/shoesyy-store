@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/storefront/navbar";
 import { Footer } from "@/components/storefront/footer";
 import { CartDrawer } from "@/components/storefront/cart-drawer";
+import { siteUrl } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,9 +20,13 @@ const oswald = Oswald({
 });
 
 export const metadata: Metadata = {
-  title: "SHOESY | Premium Sneaker Store",
+  metadataBase: siteUrl,
+  icons: { icon: "/icon.svg", shortcut: "/icon.svg" },
+  title: { default: "SHOESY | Premium Sneaker Store", template: "%s | SHOESY" },
   description:
     "Explore the most coveted sneakers, performance runners, and iconic streetwear kicks with express delivery across India.",
+  openGraph: { type: "website", siteName: "SHOESY", locale: "en_IN", images: ["/opengraph-image.png"] },
+  twitter: { card: "summary_large_image", images: ["/opengraph-image.png"] },
 };
 
 export default function RootLayout({
@@ -48,9 +53,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground">
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <Providers>
           <Navbar />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
           <Footer />
           <CartDrawer />
         </Providers>

@@ -89,18 +89,18 @@ export function OrdersTable({
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           {/* Search bar */}
           <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-md">
-            <Input
+            <Input aria-label="Search by order #, customer name, or email..."
               placeholder="Search by order #, customer name, or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 h-10 text-xs"
             />
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
+            <Search className="w-4 h-4 text-zinc-600 dark:text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
           </form>
 
           {/* Filters & Sort */}
           <div className="flex flex-wrap items-center gap-2">
-            <select
+            <select aria-label="Filter by order status"
               value={currentFilters.status || "all"}
               onChange={(e) => updateFilters("status", e.target.value)}
               className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -113,7 +113,7 @@ export function OrdersTable({
               <option value="CANCELLED">Cancelled</option>
             </select>
 
-            <select
+            <select aria-label="Sort orders"
               value={currentFilters.sort || "newest"}
               onChange={(e) => updateFilters("sort", e.target.value)}
               className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -129,7 +129,7 @@ export function OrdersTable({
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push("/admin/orders")}
-                className="h-10 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                className="h-10 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
               >
                 <RotateCcw className="w-3.5 h-3.5 mr-1" /> Reset
               </Button>
@@ -142,7 +142,7 @@ export function OrdersTable({
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
                 <th className="py-3.5 px-4">Order #</th>
                 <th className="py-3.5 px-4">Customer</th>
@@ -156,7 +156,7 @@ export function OrdersTable({
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-sm text-zinc-500">
+                  <td colSpan={7} className="py-12 text-center text-sm text-zinc-600 dark:text-zinc-400">
                     No orders match your filter criteria.
                   </td>
                 </tr>
@@ -184,7 +184,7 @@ export function OrdersTable({
                         <div className="font-mono font-bold text-xs text-zinc-900 dark:text-white">
                           {order.orderNumber}
                         </div>
-                        <div className="text-[11px] text-zinc-400 mt-0.5 whitespace-nowrap">
+                        <div className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 whitespace-nowrap">
                           {new Date(order.createdAt).toLocaleDateString("en-IN", {
                             month: "short",
                             day: "numeric",
@@ -198,7 +198,7 @@ export function OrdersTable({
                         <div className="font-semibold text-xs text-zinc-900 dark:text-white">
                           {order.customerName}
                         </div>
-                        <div className="text-[11px] text-zinc-400 truncate max-w-[160px]">
+                        <div className="text-[11px] text-zinc-600 dark:text-zinc-400 truncate max-w-[160px]">
                           {order.customerEmail}
                         </div>
                       </td>
@@ -222,7 +222,7 @@ export function OrdersTable({
                               {order.itemCount} item{order.itemCount === 1 ? "" : "s"}
                             </span>
                             {order.firstItem && (
-                              <div className="text-[10px] text-zinc-400 truncate max-w-[140px]">
+                              <div className="text-[10px] text-zinc-600 dark:text-zinc-400 truncate max-w-[140px]">
                                 UK {order.firstItem.size} &bull; {order.firstItem.name}
                               </div>
                             )}
@@ -285,7 +285,7 @@ export function OrdersTable({
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500">
+          <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
             <div>
               Showing{" "}
               <span className="font-bold text-zinc-900 dark:text-white">

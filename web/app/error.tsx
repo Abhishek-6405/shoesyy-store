@@ -26,7 +26,7 @@ export default function ErrorPage({
         <h1 className="text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
           Something went wrong
         </h1>
-        <p className="text-sm text-zinc-500 mt-3 leading-relaxed">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-3 leading-relaxed">
           An unexpected error occurred while loading this page. Please try again or return to the home page.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">

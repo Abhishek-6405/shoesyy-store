@@ -7,6 +7,7 @@ import { AdminLayoutClient } from "@/components/admin/admin-layout-client";
 export const metadata = {
   title: "SHOESY Admin | Management Portal",
   description: "E-Commerce administration panel for SHOESY.",
+  robots: { index: false, follow: false },
 };
 
 export default async function AdminLayout({

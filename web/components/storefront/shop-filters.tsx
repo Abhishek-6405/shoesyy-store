@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Filter, X, RotateCcw, Check } from "lucide-react";
+import { Filter, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useFocusTrap } from "@/lib/hooks/use-focus-trap";
 
 interface ShopFiltersProps {
   categories: { id: string; name: string; slug: string; count: number }[];
@@ -22,6 +23,7 @@ export function ShopFilters({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const drawerRef = useFocusTrap(isMobileOpen, () => setIsMobileOpen(false), "(max-width: 1023px)");
 
   const currentCategory = searchParams.get("category") || "";
   const currentBrands = searchParams.get("brand") ? searchParams.get("brand")!.split(",") : [];
@@ -123,7 +125,7 @@ export function ShopFilters({
       {/* Active filters & Clear */}
       {hasActiveFilters && (
         <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
             Active Filters
           </span>
           <button
@@ -191,19 +193,10 @@ export function ShopFilters({
                 className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer hover:text-brand-500 transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <div
-                    onClick={() => handleBrandToggle(b.name)}
-                    className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                      isChecked
-                        ? "bg-brand-500 border-brand-500 text-white"
-                        : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
-                    }`}
-                  >
-                    {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
-                  </div>
-                  <span onClick={() => handleBrandToggle(b.name)}>{b.name}</span>
+                  <input type="checkbox" checked={isChecked} onChange={() => handleBrandToggle(b.name)} className="w-4 h-4 accent-brand-600" />
+                  <span>{b.name}</span>
                 </div>
-                <span className="text-[11px] text-zinc-400 font-normal">
+                <span className="text-[11px] text-zinc-600 dark:text-zinc-400 font-normal">
                   ({b.count})
                 </span>
               </label>
@@ -271,8 +264,9 @@ export function ShopFilters({
         </h3>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-[10px] text-zinc-400 block mb-1">Min Price</label>
+            <label className="text-[10px] text-zinc-600 dark:text-zinc-400 block mb-1">Min Price</label>
             <input
+              aria-label="Minimum price in rupees"
               type="number"
               placeholder="0"
               value={currentMinPrice}
@@ -281,8 +275,9 @@ export function ShopFilters({
             />
           </div>
           <div>
-            <label className="text-[10px] text-zinc-400 block mb-1">Max Price</label>
+            <label className="text-[10px] text-zinc-600 dark:text-zinc-400 block mb-1">Max Price</label>
             <input
+              aria-label="Maximum price in rupees"
               type="number"
               placeholder="25000"
               value={currentMaxPrice}
@@ -306,7 +301,7 @@ export function ShopFilters({
             onClick={() => setIsMobileOpen(true)}
             className="flex items-center gap-2 font-bold text-xs"
           >
-            <Filter className="w-4 h-4 text-brand-500" />
+            <Filter className="w-4 h-4 text-brand-700 dark:text-brand-400" />
             Filter Kicks
             {hasActiveFilters && (
               <span className="w-2 h-2 rounded-full bg-brand-500" />
@@ -396,11 +391,17 @@ export function ShopFilters({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              data-focus-backdrop
               onClick={() => setIsMobileOpen(false)}
             />
 
             {/* Slide Drawer */}
             <motion.div
+              ref={drawerRef}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Product filters"
+              tabIndex={-1}
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
@@ -410,12 +411,13 @@ export function ShopFilters({
               <div>
                 <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 mb-6">
                   <div className="flex items-center gap-2">
-                    <Filter className="w-5 h-5 text-brand-500" />
+                    <Filter className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                     <h2 className="text-base font-bold uppercase">Filters</h2>
                   </div>
                   <button
+                    aria-label="Close filters"
                     onClick={() => setIsMobileOpen(false)}
-                    className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                    className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                   >
                     <X className="w-5 h-5" />
                   </button>

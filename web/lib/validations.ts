@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { OrderStatus, PaymentMethod } from "@prisma/client";
 
+// Zod's optional JIT uses eval; use the same validation rules without it under CSP.
+if (typeof window !== "undefined") z.config({ jitless: true });
+
 // Auth
 export const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50).optional(),

@@ -1,4 +1,6 @@
 import React from "react";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Admin dashboard", "SHOESY sales, orders and inventory overview.", undefined, true);
 import Link from "next/link";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
@@ -170,7 +172,7 @@ export default async function AdminDashboardPage() {
           <h1 className="font-display font-black text-3xl uppercase tracking-wider text-zinc-900 dark:text-white">
             Dashboard Overview
           </h1>
-          <p className="text-sm text-zinc-500 mt-1">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Real-time analytics, sales performance, and operational alerts.
           </p>
         </div>
@@ -216,11 +218,11 @@ export default async function AdminDashboardPage() {
               <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider">
                 Recent Orders
               </h3>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
                 Latest customer purchases awaiting fulfillment
               </p>
             </div>
-            <Button variant="ghost" size="sm" asChild className="text-xs font-bold text-brand-500">
+            <Button variant="ghost" size="sm" asChild className="text-xs font-bold text-brand-700 dark:text-brand-400">
               <Link href="/admin/orders">
                 View All <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Link>
@@ -229,7 +231,7 @@ export default async function AdminDashboardPage() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+              <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
                 <tr>
                   <th className="py-3 px-4">Order #</th>
                   <th className="py-3 px-4">Customer</th>
@@ -262,11 +264,11 @@ export default async function AdminDashboardPage() {
                         <div className="font-semibold text-xs text-zinc-900 dark:text-white">
                           {order.customerName}
                         </div>
-                        <div className="text-[11px] text-zinc-400 truncate max-w-[140px]">
+                        <div className="text-[11px] text-zinc-600 dark:text-zinc-400 truncate max-w-[140px]">
                           {order.customerEmail}
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-xs text-zinc-500 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-xs text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                         {new Date(order.createdAt).toLocaleDateString("en-IN", {
                           month: "short",
                           day: "numeric",
@@ -281,7 +283,7 @@ export default async function AdminDashboardPage() {
                         {formatPrice(Number(order.totalAmount))}
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        <Button variant="ghost" size="sm" asChild className="h-7 text-xs font-bold text-brand-500 px-2">
+                        <Button variant="ghost" size="sm" asChild className="h-7 text-xs font-bold text-brand-700 dark:text-brand-400 px-2">
                           <Link href={`/admin/orders/${order.id}`}>
                             Details
                           </Link>
@@ -309,13 +311,13 @@ export default async function AdminDashboardPage() {
             </span>
           </div>
 
-          <p className="text-xs text-zinc-500 mb-4">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-4">
             Sneakers reaching critically low inventory thresholds. Restock soon.
           </p>
 
           <div className="space-y-3 flex-1 overflow-y-auto max-h-[380px]">
             {lowStockProducts.length === 0 ? (
-              <div className="py-12 text-center text-xs text-zinc-400">
+              <div className="py-12 text-center text-xs text-zinc-600 dark:text-zinc-400">
                 No low stock alerts. All inventory levels are above 5 pairs.
               </div>
             ) : (
@@ -340,7 +342,7 @@ export default async function AdminDashboardPage() {
                       <div className="font-bold text-xs text-zinc-900 dark:text-white truncate">
                         {p.name}
                       </div>
-                      <div className="text-[11px] text-zinc-500">{p.brand}</div>
+                      <div className="text-[11px] text-zinc-600 dark:text-zinc-400">{p.brand}</div>
                       <div className="text-xs font-black text-rose-600 dark:text-rose-400 mt-0.5">
                         Only {p.stock} pair{p.stock === 1 ? "" : "s"} left
                       </div>

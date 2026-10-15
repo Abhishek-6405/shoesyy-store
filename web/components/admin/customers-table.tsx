@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Search,
   Lock,
@@ -124,17 +125,17 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
       {/* Search & Filter Bar */}
       <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1 max-w-md">
-          <Input
+          <Input aria-label="Search by name, email, or username..."
             placeholder="Search by name, email, or username..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 h-10 text-xs"
           />
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
+          <Search className="w-4 h-4 text-zinc-600 dark:text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
         </div>
 
         <div className="flex items-center gap-2">
-          <select
+          <select aria-label="Filter by role"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -149,7 +150,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
               variant="ghost"
               size="sm"
               onClick={() => setSearch("")}
-              className="h-10 text-xs text-zinc-500"
+              className="h-10 text-xs text-zinc-600 dark:text-zinc-400"
             >
               Clear
             </Button>
@@ -161,7 +162,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
                 <th className="py-3.5 px-4">Customer</th>
                 <th className="py-3.5 px-4">Username</th>
@@ -175,7 +176,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
               {filteredCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-sm text-zinc-500">
+                  <td colSpan={7} className="py-12 text-center text-sm text-zinc-600 dark:text-zinc-400">
                     No customers found matching your search.
                   </td>
                 </tr>
@@ -208,7 +209,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-zinc-400 truncate max-w-[180px]">
+                            <div className="text-[11px] text-zinc-600 dark:text-zinc-400 truncate max-w-[180px]">
                               {cust.email}
                             </div>
                           </div>
@@ -216,7 +217,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
                       </td>
 
                       {/* Username */}
-                      <td className="py-3.5 px-4 font-mono text-xs text-zinc-500">
+                      <td className="py-3.5 px-4 font-mono text-xs text-zinc-600 dark:text-zinc-400">
                         @{cust.username}
                       </td>
 
@@ -246,7 +247,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
                       </td>
 
                       {/* Joined Date */}
-                      <td className="py-3.5 px-4 text-xs text-zinc-400 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-xs text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                         {new Date(cust.createdAt).toLocaleDateString("en-IN", {
                           month: "short",
                           day: "numeric",
@@ -258,7 +259,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         {isDemo ? (
                           <span
-                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg"
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-lg"
                             title="Protected Demo Account"
                           >
                             <Lock className="w-3 h-3" /> Protected
@@ -275,11 +276,11 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
                               {cust.role === Role.ADMIN ? "Demote" : "Promote"}
                             </Button>
 
-                            <Button
+                            <Button aria-label="Delete customer"
                               variant="ghost"
                               size="sm"
                               onClick={() => setUserToDelete(cust)}
-                              className="h-7 w-7 p-0 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
+                              className="h-7 w-7 p-0 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
                               title="Delete customer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -298,7 +299,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
 
       {/* Delete User Confirmation Modal */}
       {userToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <Dialog label="Delete customer account" onClose={() => setUserToDelete(null)}>
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 max-w-md w-full shadow-2xl space-y-4">
             <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
               <Trash2 className="w-6 h-6" />
@@ -308,7 +309,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
               <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider">
                 Delete Customer Account?
               </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                 Are you sure you want to delete user{" "}
                 <span className="font-bold text-zinc-900 dark:text-zinc-100">
                   {userToDelete.email}
@@ -336,7 +337,7 @@ export function CustomersTable({ initialCustomers }: CustomersTableProps) {
               </Button>
             </div>
           </div>
-        </div>
+        </Dialog>
       )}
     </div>
   );

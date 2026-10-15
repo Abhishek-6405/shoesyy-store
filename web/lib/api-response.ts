@@ -53,7 +53,7 @@ export function handleApiError(err: unknown) {
     if (err.code === "P2025") return errorResponse("Record not found", 404);
   }
 
-  console.error("API Route Error:", err);
+  console.error("API Route Error:", err instanceof Error ? err.name : "UnknownError");
   // Internal error details (DB messages, stack traces) are logged, never returned.
   return errorResponse("An unexpected server error occurred", 500);
 }

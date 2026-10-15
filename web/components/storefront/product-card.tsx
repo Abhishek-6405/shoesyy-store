@@ -194,7 +194,7 @@ export function ProductCard({
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
           {category && (
-            <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+            <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
               {category.name}
             </span>
           )}
@@ -213,21 +213,21 @@ export function ProductCard({
             <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200">
               {averageRating.toFixed(1)}
             </span>
-            <span className="text-[11px] text-zinc-400">({reviewCount})</span>
+            <span className="text-[11px] text-zinc-600 dark:text-zinc-400">({reviewCount})</span>
           </div>
         </div>
 
         {/* Price & Size details */}
         <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
           <div>
-            <span className="text-xs text-zinc-400 block font-medium">Price</span>
+            <span className="text-xs text-zinc-600 dark:text-zinc-400 block font-medium">Price</span>
             <span className="text-lg font-black text-zinc-900 dark:text-white">
               {formatPrice(price)}
             </span>
           </div>
 
           <div className="text-right">
-            <span className="text-[11px] text-zinc-400 block">Sizes</span>
+            <span className="text-[11px] text-zinc-600 dark:text-zinc-400 block">Sizes</span>
             <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               UK {sizes?.[0]}-{sizes?.[sizes.length - 1]}
             </span>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -10,6 +10,7 @@ import { useCartStore } from "@/lib/store/cart";
 import { useCartDetails } from "@/lib/hooks/use-cart-details";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useFocusTrap } from "@/lib/hooks/use-focus-trap";
 
 export function CartDrawer() {
   const pathname = usePathname();
@@ -28,17 +29,7 @@ export function CartDrawer() {
     amountNeededForFreeShipping,
   } = useCartDetails();
 
-  // Prevent background scroll when drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+  const drawerRef = useFocusTrap(isOpen, closeCart);
 
   if (pathname?.startsWith("/admin")) return null;
 
@@ -55,11 +46,17 @@ export function CartDrawer() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            data-focus-backdrop
             onClick={closeCart}
           />
 
           {/* Drawer with Spring Slide */}
           <motion.div
+            ref={drawerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping bag"
+            tabIndex={-1}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -69,7 +66,7 @@ export function CartDrawer() {
             {/* Header */}
             <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-brand-500" />
+                <ShoppingBag className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                 <h2 className="text-xl font-bold tracking-tight uppercase">Your Bag</h2>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
                   {items.length} {items.length === 1 ? "item" : "items"}
@@ -77,7 +74,7 @@ export function CartDrawer() {
               </div>
               <button
                 onClick={closeCart}
-                className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 aria-label="Close cart"
               >
                 <X className="w-5 h-5" />
@@ -99,7 +96,7 @@ export function CartDrawer() {
                       </>
                     )}
                   </span>
-                  <span className="text-zinc-400 font-semibold">{shippingPct}%</span>
+                  <span className="text-zinc-600 dark:text-zinc-400 font-semibold">{shippingPct}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <motion.div
@@ -132,11 +129,11 @@ export function CartDrawer() {
                 </div>
               ) : items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                  <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-4 text-zinc-400">
+                  <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-4 text-zinc-600 dark:text-zinc-400">
                     <ShoppingBag className="w-8 h-8" />
                   </div>
                   <h3 className="text-lg font-bold mb-1">Your bag is empty</h3>
-                  <p className="text-sm text-zinc-500 max-w-xs mb-6">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-xs mb-6">
                     Looks like you haven&apos;t added any sneakers to your bag yet.
                   </p>
                   <Button onClick={closeCart} asChild>
@@ -182,13 +179,13 @@ export function CartDrawer() {
                               </Link>
                               <button
                                 onClick={() => removeItem(item.productId, item.size, item.color)}
-                                className="text-zinc-400 hover:text-rose-600 transition-colors p-1"
+                                className="text-zinc-600 dark:text-zinc-400 hover:text-rose-600 transition-colors p-1"
                                 aria-label="Remove item"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
-                            <p className="text-xs text-zinc-500 mt-0.5">
+                            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
                               Size: <span className="font-semibold text-zinc-800 dark:text-zinc-200">UK {item.size}</span>
                               {item.color && (
                                 <> • Color: <span className="font-semibold text-zinc-800 dark:text-zinc-200">{item.color}</span></>
@@ -257,13 +254,13 @@ export function CartDrawer() {
             {items.length > 0 && (
               <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-4">
                 <div className="space-y-1.5 text-sm">
-                  <div className="flex justify-between text-zinc-500">
+                  <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span>Subtotal</span>
                     <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                       {formatPrice(subtotal)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-zinc-500">
+                  <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span>Shipping</span>
                     <span>
                       {shipping === 0 ? (

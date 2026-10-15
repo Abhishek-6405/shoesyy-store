@@ -11,6 +11,7 @@ import { slugify } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 import {
   FolderTree,
   Plus,
@@ -192,7 +193,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
           <h1 className="font-display font-black text-3xl uppercase tracking-wider text-zinc-900 dark:text-white">
             Categories
           </h1>
-          <p className="text-sm text-zinc-500 mt-1">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Group your sneaker collections by sport, lifestyle, and performance intent.
           </p>
         </div>
@@ -207,7 +208,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
                 <th className="py-3.5 px-4">Category</th>
                 <th className="py-3.5 px-4">Slug</th>
@@ -219,7 +220,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
               {categories.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-sm text-zinc-500">
+                  <td colSpan={5} className="py-12 text-center text-sm text-zinc-600 dark:text-zinc-400">
                     No categories found. Click Create Category to add one.
                   </td>
                 </tr>
@@ -235,7 +236,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                     {/* Thumbnail & Name */}
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400">
+                        <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden shrink-0 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
                           {cat.image ? (
                             <Image
                               src={cat.image}
@@ -245,7 +246,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                               sizes="48px"
                             />
                           ) : (
-                            <FolderTree className="w-5 h-5 text-zinc-400" />
+                            <FolderTree className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                           )}
                         </div>
                         <div className="font-bold text-xs text-zinc-900 dark:text-white">
@@ -255,20 +256,20 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                     </td>
 
                     {/* Slug */}
-                    <td className="py-3.5 px-4 font-mono text-xs text-zinc-500">
+                    <td className="py-3.5 px-4 font-mono text-xs text-zinc-600 dark:text-zinc-400">
                       /{cat.slug}
                     </td>
 
                     {/* Product count */}
                     <td className="py-3.5 px-4">
                       <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                        <Package className="w-3.5 h-3.5 text-zinc-400" />
+                        <Package className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
                         {cat.productCount} shoe{cat.productCount === 1 ? "" : "s"}
                       </span>
                     </td>
 
                     {/* Created date */}
-                    <td className="py-3.5 px-4 text-xs text-zinc-400 whitespace-nowrap">
+                    <td className="py-3.5 px-4 text-xs text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                       {new Date(cat.createdAt).toLocaleDateString("en-IN", {
                         month: "short",
                         day: "numeric",
@@ -279,7 +280,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                     {/* Actions */}
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
-                        <Button
+                        <Button aria-label="Edit Category"
                           variant="ghost"
                           size="sm"
                           onClick={() => openEditModal(cat)}
@@ -289,14 +290,14 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                           <Edit2 className="w-3.5 h-3.5" />
                         </Button>
 
-                        <Button
+                        <Button aria-label="Delete Category"
                           variant="ghost"
                           size="sm"
                           onClick={() => {
                             setDeleteErrorMessage(null);
                             setCategoryToDelete(cat);
                           }}
-                          className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
+                          className="h-8 w-8 p-0 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
                           title="Delete Category"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -313,17 +314,18 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
 
       {/* Create / Edit Modal Dialog */}
       {modalMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <Dialog label={modalMode === "edit" ? "Edit category" : "Create category"} onClose={closeModal}>
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 max-w-md w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
               <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <FolderTree className="w-5 h-5 text-brand-500" />
+                <FolderTree className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                 {modalMode === "edit" ? "Edit Category" : "Create New Category"}
               </h3>
               <button
+                aria-label="Close category editor"
                 type="button"
                 onClick={closeModal}
-                className="text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -335,7 +337,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                   Category Name *
                 </label>
-                <Input
+                <Input aria-label="Name"
                   placeholder="e.g. Cross Training"
                   {...register("name")}
                   onChange={handleNameChange}
@@ -354,12 +356,12 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                   <button
                     type="button"
                     onClick={() => setValue("slug", slugify(watchedName || ""))}
-                    className="text-[11px] font-bold text-brand-500 hover:underline flex items-center gap-1"
+                    className="text-[11px] font-bold text-brand-700 dark:text-brand-400 hover:underline flex items-center gap-1"
                   >
                     <Sparkles className="w-3 h-3" /> Auto-generate
                   </button>
                 </div>
-                <Input
+                <Input aria-label="URL slug"
                   placeholder="e.g. cross-training"
                   {...register("slug")}
                 />
@@ -373,7 +375,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                   Header Image URL (Optional)
                 </label>
-                <Input
+                <Input aria-label="Category image URL"
                   placeholder="https://images.unsplash.com/photo-..."
                   {...register("image")}
                 />
@@ -419,12 +421,12 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
               </div>
             </form>
           </div>
-        </div>
+        </Dialog>
       )}
 
       {/* Delete Confirmation Dialog */}
       {categoryToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <Dialog label="Delete category" onClose={() => setCategoryToDelete(null)}>
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 max-w-md w-full shadow-2xl space-y-4">
             <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
               <Trash2 className="w-6 h-6" />
@@ -434,7 +436,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
               <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider">
                 Delete Category?
               </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                 Are you sure you want to delete category{" "}
                 <span className="font-bold text-zinc-900 dark:text-zinc-100">
                   &ldquo;{categoryToDelete.name}&rdquo;
@@ -472,7 +474,7 @@ export function CategoriesManager({ initialCategories }: CategoriesManagerProps)
               </Button>
             </div>
           </div>
-        </div>
+        </Dialog>
       )}
     </div>
   );

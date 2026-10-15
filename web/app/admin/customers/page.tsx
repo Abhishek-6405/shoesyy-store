@@ -1,4 +1,6 @@
 import React from "react";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Manage customers", "SHOESY customer and role management.", undefined, true);
 import prisma from "@/lib/prisma";
 import { CustomersTable, CustomerItem } from "@/components/admin/customers-table";
 
@@ -48,7 +50,7 @@ export default async function AdminCustomersPage() {
         <h1 className="font-display font-black text-3xl uppercase tracking-wider text-zinc-900 dark:text-white">
           Customer Accounts
         </h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
           Review customer purchase frequency, lifetime value, and account roles.
         </p>
       </div>

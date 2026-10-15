@@ -10,7 +10,7 @@ export function revalidateCatalog() {
   try {
     revalidateTag(CATALOG_TAG);
   } catch (err) {
-    console.error("Failed to revalidate catalog cache", err);
+    console.error("Failed to revalidate catalog cache", err instanceof Error ? err.name : "UnknownError");
   }
 }
 

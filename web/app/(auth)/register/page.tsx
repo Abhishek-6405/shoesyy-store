@@ -98,13 +98,13 @@ function RegisterForm() {
     <div className="py-12 sm:py-20">
       <Container className="max-w-md">
         <div className="text-center space-y-2 mb-8">
-          <div className="inline-flex p-3 rounded-2xl bg-brand-500/10 text-brand-500 mb-2">
+          <div className="inline-flex p-3 rounded-2xl bg-brand-500/10 text-brand-700 dark:text-brand-400 mb-2">
             <Flame className="w-8 h-8" />
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-black italic uppercase tracking-tight text-zinc-900 dark:text-white">
             Join Shoesy
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-500">
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
             Create an account for personalized drops, wishlist sync, and order tracking.
           </p>
         </div>
@@ -117,7 +117,7 @@ function RegisterForm() {
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
               Full Name
             </label>
-            <Input
+            <Input aria-label="e.g. Vikram Malhotra"
               type="text"
               placeholder="e.g. Vikram Malhotra"
               value={name}
@@ -129,7 +129,7 @@ function RegisterForm() {
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
               Username *
             </label>
-            <Input
+            <Input aria-label="e.g. vikram_sneakers"
               type="text"
               placeholder="e.g. vikram_sneakers"
               value={username}
@@ -142,7 +142,7 @@ function RegisterForm() {
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
               Email Address *
             </label>
-            <Input
+            <Input aria-label="vikram@example.com"
               type="email"
               placeholder="vikram@example.com"
               value={email}
@@ -155,7 +155,7 @@ function RegisterForm() {
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
               Password (min. 6 chars) *
             </label>
-            <Input
+            <Input aria-label="••••••••"
               type="password"
               placeholder="••••••••"
               value={password}
@@ -168,7 +168,7 @@ function RegisterForm() {
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block mb-1.5">
               Confirm Password *
             </label>
-            <Input
+            <Input aria-label="••••••••"
               type="password"
               placeholder="••••••••"
               value={confirmPassword}
@@ -194,11 +194,11 @@ function RegisterForm() {
           </Button>
 
           <div className="text-center pt-2">
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">
               Already have an account?{" "}
               <Link
                 href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-                className="font-bold text-brand-500 hover:underline"
+                className="font-bold text-brand-700 dark:text-brand-400 hover:underline"
               >
                 Sign In
               </Link>

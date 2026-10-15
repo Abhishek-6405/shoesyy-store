@@ -1,4 +1,6 @@
 import React from "react";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Admin order detail", "View shipping, payment and fulfillment status.", undefined, true);
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -74,7 +76,7 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
             <span>Order #{order.orderNumber}</span>
           </h1>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500 mt-1">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 mt-1">
             <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
               {new Date(order.createdAt).toLocaleDateString("en-IN", {
@@ -97,7 +99,7 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
               <h3 className="font-display font-bold text-base text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <Package className="w-4 h-4 text-brand-500" />
+                <Package className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                 Purchased Footwear ({order.items.length} item{order.items.length === 1 ? "" : "s"})
               </h3>
             </div>
@@ -125,11 +127,11 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
                       <div className="font-bold text-sm text-zinc-900 dark:text-white truncate">
                         {item.name}
                       </div>
-                      <div className="text-xs text-zinc-500 mt-0.5">
+                      <div className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
                         Size: <span className="font-bold text-zinc-800 dark:text-zinc-200">UK {item.size}</span> &bull; Quantity:{" "}
                         <span className="font-bold text-zinc-800 dark:text-zinc-200">{item.quantity}</span>
                       </div>
-                      <div className="text-xs font-mono text-zinc-400 mt-1">
+                      <div className="text-xs font-mono text-zinc-600 dark:text-zinc-400 mt-1">
                         {formatPrice(itemPrice)} each
                       </div>
                     </div>
@@ -144,13 +146,13 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
 
             {/* Financial Summary */}
             <div className="p-6 bg-zinc-50/60 dark:bg-zinc-800/40 border-t border-zinc-200 dark:border-zinc-800 space-y-2 text-xs">
-              <div className="flex justify-between text-zinc-500">
+              <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                 <span>Subtotal:</span>
                 <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
                   {formatPrice(subtotal)}
                 </span>
               </div>
-              <div className="flex justify-between text-zinc-500">
+              <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                 <span>Standard Delivery:</span>
                 <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
                   {shippingFee === 0 ? "FREE" : formatPrice(shippingFee)}
@@ -170,23 +172,23 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
             {/* Customer Details */}
             <div className="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-3">
               <div className="flex items-center gap-2 font-display font-bold text-sm text-zinc-900 dark:text-white uppercase tracking-wider">
-                <User className="w-4 h-4 text-brand-500" />
+                <User className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                 Customer Contact
               </div>
               <div className="text-xs space-y-1.5 text-zinc-600 dark:text-zinc-300">
                 <div className="font-bold text-zinc-900 dark:text-white">
                   {order.customerName}
                 </div>
-                <div className="flex items-center gap-2 text-zinc-500">
+                <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
                   <Mail className="w-3.5 h-3.5" /> {order.customerEmail}
                 </div>
                 {order.customerPhone && (
-                  <div className="flex items-center gap-2 text-zinc-500">
+                  <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
                     <Phone className="w-3.5 h-3.5" /> {order.customerPhone}
                   </div>
                 )}
                 {order.user && (
-                  <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800 text-[11px] text-zinc-400">
+                  <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400">
                     Account: {order.user.role} member since{" "}
                     {new Date(order.user.createdAt).getFullYear()}
                   </div>
@@ -197,7 +199,7 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
             {/* Delivery Destination */}
             <div className="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-3">
               <div className="flex items-center gap-2 font-display font-bold text-sm text-zinc-900 dark:text-white uppercase tracking-wider">
-                <MapPin className="w-4 h-4 text-brand-500" />
+                <MapPin className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                 Delivery Address
               </div>
               <div className="text-xs text-zinc-600 dark:text-zinc-300 space-y-1 leading-relaxed">
@@ -225,20 +227,20 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
           {/* Payment Card */}
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
             <h3 className="font-display font-bold text-base text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-brand-500" />
+              <CreditCard className="w-4 h-4 text-brand-700 dark:text-brand-400" />
               Payment Details
             </h3>
 
             <div className="space-y-3 text-xs">
               <div className="flex justify-between py-1.5 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-500">Method:</span>
+                <span className="text-zinc-600 dark:text-zinc-400">Method:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">
                   {order.paymentMethod === "COD" ? "Cash on Delivery (COD)" : "Razorpay Online Payment"}
                 </span>
               </div>
 
               <div className="flex justify-between py-1.5 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-500">Payment Status:</span>
+                <span className="text-zinc-600 dark:text-zinc-400">Payment Status:</span>
                 <span
                   className={`font-black uppercase text-[11px] px-2 py-0.5 rounded ${
                     order.paymentStatus === "COMPLETED"
@@ -253,7 +255,7 @@ export default async function AdminOrderDetailPage({ params }: AdminOrderDetailP
               </div>
 
               <div className="flex justify-between py-1.5">
-                <span className="text-zinc-500">Settled Amount:</span>
+                <span className="text-zinc-600 dark:text-zinc-400">Settled Amount:</span>
                 <span className="font-mono font-bold text-zinc-900 dark:text-white">
                   {formatPrice(totalAmount)}
                 </span>

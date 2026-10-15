@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useFocusTrap } from "@/lib/hooks/use-focus-trap";
 import {
   LayoutDashboard,
   Package,
@@ -56,6 +57,7 @@ const navItems = [
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
+  const drawerRef = useFocusTrap(isOpen, onClose, "(max-width: 1023px)");
 
   const isLinkActive = (href: string, exact: boolean) => {
     if (exact) {
@@ -70,14 +72,20 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       {isOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden animate-in fade-in"
+          data-focus-backdrop
           onClick={onClose}
         />
       )}
 
       {/* Sidebar container */}
-      <aside
+      <div
+        ref={drawerRef}
+        role={isOpen ? "dialog" : undefined}
+        aria-modal={isOpen ? true : undefined}
+        aria-label="Admin navigation"
+        tabIndex={-1}
         className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-zinc-950 text-zinc-200 border-r border-zinc-800/80 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          isOpen ? "translate-x-0" : "-translate-x-full invisible lg:visible"
         }`}
       >
         {/* Brand Header */}
@@ -106,7 +114,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
         {/* Navigation items */}
         <div className="flex-1 py-6 px-3 space-y-1.5 overflow-y-auto">
-          <div className="px-3 pb-2 text-[11px] font-black uppercase tracking-widest text-zinc-500">
+          <div className="px-3 pb-2 text-[11px] font-black uppercase tracking-widest text-zinc-400">
             Management
           </div>
 
@@ -128,7 +136,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 {active && (
                   <motion.div
                     layoutId="adminSidebarActive"
-                    className="absolute inset-0 bg-brand-500 rounded-xl shadow-md shadow-brand-500/20"
+                    className="absolute inset-0 bg-brand-700 rounded-xl shadow-md shadow-brand-500/20"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
@@ -160,7 +168,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <span className="truncate">RBAC Protected (ADMIN)</span>
           </div>
         </div>
-      </aside>
+      </div>
     </>
   );
 }

@@ -27,7 +27,7 @@ export function CategoryTiles({ categories }: CategoryTilesProps) {
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
-            <span className="text-xs font-black uppercase tracking-widest text-brand-500 flex items-center gap-1.5 mb-1">
+            <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400 flex items-center gap-1.5 mb-1">
               <Zap className="w-3.5 h-3.5 fill-current" />
               Explore By Category
             </span>

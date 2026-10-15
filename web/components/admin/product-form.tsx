@@ -289,7 +289,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Product Title *
               </label>
-              <Input
+              <Input aria-label="Name"
                 placeholder="e.g. Nike Air Max 90 Ultra"
                 {...register("name")}
                 onChange={handleNameChange}
@@ -308,12 +308,12 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 <button
                   type="button"
                   onClick={() => setValue("slug", slugify(watchedName || ""))}
-                  className="text-[11px] font-bold text-brand-500 hover:underline flex items-center gap-1"
+                  className="text-[11px] font-bold text-brand-700 dark:text-brand-400 hover:underline flex items-center gap-1"
                 >
                   <Sparkles className="w-3 h-3" /> Auto-generate
                 </button>
               </div>
-              <Input
+              <Input aria-label="URL slug"
                 placeholder="e.g. nike-air-max-90-ultra"
                 {...register("slug")}
               />
@@ -327,7 +327,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Description *
               </label>
-              <textarea
+              <textarea aria-label="Description"
                 rows={4}
                 placeholder="Write compelling product specifications, material details, and athlete heritage..."
                 {...register("description")}
@@ -346,18 +346,18 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 <h3 className="font-display font-bold text-base text-zinc-900 dark:text-white uppercase tracking-wider">
                   Product Imagery
                 </h3>
-                <p className="text-xs text-zinc-500 mt-0.5">
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
                   High-resolution photo URLs (Unsplash or hosted media)
                 </p>
               </div>
-              <span className="text-xs font-bold text-zinc-500">
+              <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
                 {watchedImages.length} image{watchedImages.length === 1 ? "" : "s"}
               </span>
             </div>
 
             {/* Add Image URL bar */}
             <div className="flex gap-2">
-              <Input
+              <Input aria-label="Product image URL"
                 placeholder="https://images.unsplash.com/photo-..."
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
@@ -397,7 +397,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                     sizes="200px"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <button
+                    <button aria-label="Remove image"
                       type="button"
                       onClick={() => handleRemoveImage(idx)}
                       className="p-1.5 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors"
@@ -457,7 +457,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 Colorways *
               </label>
               <div className="flex gap-2 mb-2">
-                <Input
+                <Input aria-label="Add colorway"
                   placeholder="e.g. Triple Black, White/Gym Red"
                   value={newColorInput}
                   onChange={(e) => setNewColorInput(e.target.value)}
@@ -489,7 +489,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                     <button
                       type="button"
                       onClick={() => handleRemoveColor(color)}
-                      className="text-zinc-400 hover:text-rose-500 transition-colors"
+                      className="text-zinc-600 dark:text-zinc-400 hover:text-rose-500 transition-colors"
                       aria-label={`Remove color ${color}`}
                     >
                       <X className="w-3.5 h-3.5" />
@@ -518,7 +518,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 <label className="text-xs font-bold text-zinc-900 dark:text-white block cursor-pointer">
                   Storefront Active
                 </label>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
                   Visible in public catalog and search
                 </p>
               </div>
@@ -526,7 +526,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 control={control}
                 name="isActive"
                 render={({ field }) => (
-                  <input
+                  <input aria-label="Storefront active"
                     type="checkbox"
                     checked={field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
@@ -542,7 +542,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 <label className="text-xs font-bold text-zinc-900 dark:text-white block cursor-pointer">
                   Featured Drop
                 </label>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5">
                   Spotlight on homepage hero and top carousels
                 </p>
               </div>
@@ -550,7 +550,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
                 control={control}
                 name="featured"
                 render={({ field }) => (
-                  <input
+                  <input aria-label="Featured drop"
                     type="checkbox"
                     checked={field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
@@ -572,7 +572,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Price (INR) *
               </label>
-              <Input
+              <Input aria-label="Price in rupees"
                 type="number"
                 step="0.01"
                 placeholder="9999"
@@ -588,7 +588,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Stock Quantity *
               </label>
-              <Input
+              <Input aria-label="Stock quantity"
                 type="number"
                 placeholder="15"
                 {...register("stock")}
@@ -596,7 +596,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               {errors.stock && (
                 <p className="text-xs text-rose-500 mt-1">{errors.stock.message}</p>
               )}
-              <p className="text-[11px] text-zinc-400 mt-1">
+              <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">
                 Products with &le; 5 units will trigger Low-Stock alerts.
               </p>
             </div>
@@ -613,7 +613,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Brand *
               </label>
-              <select
+              <select aria-label="Brand"
                 {...register("brand")}
                 className="w-full h-10 px-3 text-sm rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:border-brand-500 text-zinc-900 dark:text-zinc-100"
               >
@@ -633,7 +633,7 @@ export function ProductForm({ initialData, categories, isEdit = false }: Product
               <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Category *
               </label>
-              <select
+              <select aria-label="Category"
                 {...register("categoryId")}
                 className="w-full h-10 px-3 text-sm rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:outline-none focus:border-brand-500 text-zinc-900 dark:text-zinc-100"
               >

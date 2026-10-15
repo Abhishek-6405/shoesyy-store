@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 import {
   Search,
   Edit,
@@ -166,19 +167,19 @@ export function ProductsTable({
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           {/* Search bar */}
           <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-md">
-            <Input
+            <Input aria-label="Search kicks by title, brand, or slug..."
               placeholder="Search kicks by title, brand, or slug..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 h-10 text-xs"
             />
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
+            <Search className="w-4 h-4 text-zinc-600 dark:text-zinc-400 absolute left-3.5 top-3 pointer-events-none" />
           </form>
 
           {/* Quick Filters */}
           <div className="flex flex-wrap items-center gap-2">
             {/* Status Filter */}
-            <select
+            <select aria-label="Filter by brand"
               value={currentFilters.status || "all"}
               onChange={(e) => updateFilters("status", e.target.value)}
               className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -189,7 +190,7 @@ export function ProductsTable({
             </select>
 
             {/* Brand Filter */}
-            <select
+            <select aria-label="Filter by category"
               value={currentFilters.brand || "all"}
               onChange={(e) => updateFilters("brand", e.target.value)}
               className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -203,7 +204,7 @@ export function ProductsTable({
             </select>
 
             {/* Category Filter */}
-            <select
+            <select aria-label="Filter by active status"
               value={currentFilters.category || "all"}
               onChange={(e) => updateFilters("category", e.target.value)}
               className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -217,7 +218,7 @@ export function ProductsTable({
             </select>
 
             {/* Sort Filter */}
-            <select
+            <select aria-label="Sort products"
               value={currentFilters.sort || "newest"}
               onChange={(e) => updateFilters("sort", e.target.value)}
               className="h-10 px-3 text-xs font-semibold rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-brand-500"
@@ -240,7 +241,7 @@ export function ProductsTable({
                 variant="ghost"
                 size="sm"
                 onClick={() => router.push("/admin/products")}
-                className="h-10 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+                className="h-10 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
               >
                 <RotateCcw className="w-3.5 h-3.5 mr-1" /> Reset
               </Button>
@@ -253,7 +254,7 @@ export function ProductsTable({
       <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-500 border-b border-zinc-200 dark:border-zinc-800">
+            <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] font-black uppercase tracking-wider text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
               <tr>
                 <th className="py-3.5 px-4">Sneaker</th>
                 <th className="py-3.5 px-4">Brand & Category</th>
@@ -266,7 +267,7 @@ export function ProductsTable({
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-sm text-zinc-500">
+                  <td colSpan={6} className="py-12 text-center text-sm text-zinc-600 dark:text-zinc-400">
                     No products found matching your current filters.
                   </td>
                 </tr>
@@ -303,11 +304,11 @@ export function ProductsTable({
                               </span>
                               {product.featured && (
                                 <span title="Featured on home">
-                                  <Flame className="w-3.5 h-3.5 text-brand-500 fill-brand-500 shrink-0" />
+                                  <Flame className="w-3.5 h-3.5 text-brand-700 dark:text-brand-400 fill-brand-500 shrink-0" />
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-zinc-400 font-mono truncate max-w-[180px]">
+                            <div className="text-[11px] text-zinc-600 dark:text-zinc-400 font-mono truncate max-w-[180px]">
                               /{product.slug}
                             </div>
                           </div>
@@ -319,7 +320,7 @@ export function ProductsTable({
                         <div className="font-semibold text-xs text-zinc-800 dark:text-zinc-200">
                           {product.brand}
                         </div>
-                        <div className="text-[11px] text-zinc-400">
+                        <div className="text-[11px] text-zinc-600 dark:text-zinc-400">
                           {product.category?.name || "Uncategorized"}
                         </div>
                       </td>
@@ -365,11 +366,11 @@ export function ProductsTable({
                         <div className="flex items-center justify-end gap-1.5">
                           {/* Live preview in storefront (only if active) */}
                           {product.isActive && (
-                            <Button
+                            <Button aria-label="View on storefront"
                               variant="ghost"
                               size="sm"
                               asChild
-                              className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                              className="h-8 w-8 p-0 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                               title="View on storefront"
                             >
                               <Link href={`/products/${product.slug}`} target="_blank">
@@ -379,7 +380,7 @@ export function ProductsTable({
                           )}
 
                           {/* Edit Product */}
-                          <Button
+                          <Button aria-label="Edit product"
                             variant="ghost"
                             size="sm"
                             asChild
@@ -393,17 +394,17 @@ export function ProductsTable({
 
                           {/* Deactivate or Reactivate */}
                           {product.isActive ? (
-                            <Button
+                            <Button aria-label="Deactivate / Hide from storefront"
                               variant="ghost"
                               size="sm"
                               onClick={() => setProductToDeactivate(product)}
-                              className="h-8 w-8 p-0 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
+                              className="h-8 w-8 p-0 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400"
                               title="Deactivate / Hide from storefront"
                             >
                               <PowerOff className="w-3.5 h-3.5" />
                             </Button>
                           ) : (
-                            <Button
+                            <Button aria-label="Reactivate in storefront"
                               variant="ghost"
                               size="sm"
                               onClick={() => handleReactivate(product)}
@@ -426,7 +427,7 @@ export function ProductsTable({
 
         {/* Pagination bar */}
         {pagination.totalPages > 1 && (
-          <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-500">
+          <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400">
             <div>
               Showing{" "}
               <span className="font-bold text-zinc-900 dark:text-white">
@@ -474,7 +475,7 @@ export function ProductsTable({
 
       {/* Deactivate Confirm Modal Dialog */}
       {productToDeactivate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+        <Dialog label="Deactivate product" onClose={() => setProductToDeactivate(null)}>
           <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 max-w-md w-full shadow-2xl space-y-4">
             <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
               <PowerOff className="w-6 h-6" />
@@ -484,7 +485,7 @@ export function ProductsTable({
               <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider">
                 Deactivate Product?
               </h3>
-              <p className="text-xs text-zinc-500 mt-2 leading-relaxed">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
                 Are you sure you want to deactivate{" "}
                 <span className="font-bold text-zinc-900 dark:text-zinc-100">
                   &ldquo;{productToDeactivate.name}&rdquo;
@@ -512,7 +513,7 @@ export function ProductsTable({
               </Button>
             </div>
           </div>
-        </div>
+        </Dialog>
       )}
     </div>
   );

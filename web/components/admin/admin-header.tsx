@@ -25,7 +25,7 @@ export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-zinc-500">
+        <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>Admin Portal</span>
         </div>
@@ -40,8 +40,8 @@ export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
           asChild
           className="h-8 text-xs font-bold gap-1.5 border-zinc-200 dark:border-zinc-700 hover:border-brand-500"
         >
-          <Link href="/" target="_blank">
-            <ExternalLink className="w-3.5 h-3.5 text-brand-500" />
+          <Link href="/" target="_blank" aria-label="View store in a new tab">
+            <ExternalLink className="w-3.5 h-3.5 text-brand-700 dark:text-brand-400" />
             <span className="hidden sm:inline">View Store</span>
           </Link>
         </Button>
@@ -56,7 +56,7 @@ export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
             <div className="text-xs font-bold text-zinc-900 dark:text-white leading-none">
               {session?.user?.name || "Demo Admin"}
             </div>
-            <div className="text-[10px] text-zinc-500 font-medium leading-none mt-1">
+            <div className="text-[10px] text-zinc-600 dark:text-zinc-400 font-medium leading-none mt-1">
               {session?.user?.email || "admin@shoesy.demo"}
             </div>
           </div>
@@ -68,7 +68,7 @@ export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
         </div>
 
         {/* Sign out button */}
-        <Button
+        <Button aria-label="Sign Out of Admin"
           variant="ghost"
           size="sm"
           onClick={() => signOut({ callbackUrl: "/login" })}

@@ -1,4 +1,6 @@
 import { notFound, redirect } from "next/navigation";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Order confirmation", "Your SHOESY receipt, shipping details and order status.", undefined, true);
 import Link from "next/link";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
@@ -112,7 +114,7 @@ export default async function OrderDetailPage({
           <div className="space-y-1">
             <Link
               href="/orders"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-brand-500 transition-colors mb-2"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-brand-500 transition-colors mb-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to My Orders
@@ -127,7 +129,7 @@ export default async function OrderDetailPage({
                 <Badge variant="brand">{order.status}</Badge>
               )}
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">
               Placed on{" "}
               {new Date(order.createdAt).toLocaleDateString("en-IN", {
                 day: "numeric",
@@ -150,7 +152,7 @@ export default async function OrderDetailPage({
         {/* Status Stepper (if not cancelled) */}
         {order.status !== OrderStatus.CANCELLED && (
           <div className="p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
-            <span className="text-xs font-black uppercase tracking-wider text-zinc-400 block mb-6">
+            <span className="text-xs font-black uppercase tracking-wider text-zinc-600 dark:text-zinc-400 block mb-6">
               Fulfillment Status
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -191,7 +193,7 @@ export default async function OrderDetailPage({
           <div className="md:col-span-7 space-y-4">
             <div className="p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                <Package className="w-5 h-5 text-brand-500" />
+                <Package className="w-5 h-5 text-brand-700 dark:text-brand-400" />
                 <h3 className="text-base font-bold uppercase">Items In This Order</h3>
               </div>
 
@@ -214,7 +216,7 @@ export default async function OrderDetailPage({
                       <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
                         {item.name}
                       </p>
-                      <p className="text-xs text-zinc-400 mt-0.5">
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
                         Size: <span className="font-semibold text-zinc-700 dark:text-zinc-300">UK {item.size}</span> • Quantity: {item.quantity}
                       </p>
                       <p className="text-xs font-black text-brand-600 mt-1">
@@ -230,13 +232,13 @@ export default async function OrderDetailPage({
 
               {/* Total Summary */}
               <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-2 text-xs">
-                <div className="flex justify-between text-zinc-500">
+                <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                   <span>Subtotal</span>
                   <span className="font-bold text-zinc-900 dark:text-white">
                     {formatPrice(Number(order.totalAmount))}
                   </span>
                 </div>
-                <div className="flex justify-between text-zinc-500">
+                <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                   <span>Shipping</span>
                   <span className="text-emerald-600 font-bold">FREE</span>
                 </div>
@@ -255,7 +257,7 @@ export default async function OrderDetailPage({
             {/* Delivery address */}
             <div className="p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm space-y-3">
               <div className="flex items-center gap-2 pb-2 border-b border-zinc-100 dark:border-zinc-800">
-                <MapPin className="w-4 h-4 text-brand-500" />
+                <MapPin className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
                   Shipping Destination
                 </h3>
@@ -269,7 +271,7 @@ export default async function OrderDetailPage({
                   {address.city}, {address.state} - {address.postalCode}
                 </p>
                 <p>{address.country || "India"}</p>
-                <p className="text-zinc-400 pt-1">
+                <p className="text-zinc-600 dark:text-zinc-400 pt-1">
                   Contact: {address.phone || order.customerPhone}
                 </p>
               </div>
@@ -281,7 +283,7 @@ export default async function OrderDetailPage({
                 {order.paymentMethod === "COD" ? (
                   <Banknote className="w-4 h-4 text-emerald-600" />
                 ) : (
-                  <CreditCard className="w-4 h-4 text-brand-500" />
+                  <CreditCard className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                 )}
                 <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white">
                   Payment Details
@@ -305,7 +307,7 @@ export default async function OrderDetailPage({
                 </div>
                 {order.razorpayPaymentId && (
                   <div className="flex justify-between items-center font-mono text-[11px]">
-                    <span className="text-zinc-400">Payment ID:</span>
+                    <span className="text-zinc-600 dark:text-zinc-400">Payment ID:</span>
                     <span>{order.razorpayPaymentId}</span>
                   </div>
                 )}

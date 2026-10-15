@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { Role } from "@prisma/client";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -20,7 +21,10 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
+        if (!rateLimit("login", clientIp(req.headers || {})).allowed) {
+          throw new Error("Too many login attempts. Try again in 15 minutes.");
+        }
         const rawIdentifier =
           credentials?.identifier ||
           (credentials as Record<string, string | undefined> | undefined)?.email;
@@ -78,7 +82,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-build-time-shoesy-store-key-32",
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export async function getCurrentUser() {

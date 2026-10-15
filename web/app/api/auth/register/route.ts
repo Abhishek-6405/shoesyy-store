@@ -4,8 +4,15 @@ import prisma from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
 import { successResponse, errorResponse, handleApiError } from "@/lib/api-response";
 import { Role } from "@prisma/client";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  const limit = rateLimit("register", req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown");
+  if (!limit.allowed) {
+    const response = errorResponse("Too many registration attempts. Try again in 15 minutes.", 429);
+    response.headers.set("Retry-After", String(limit.retryAfter));
+    return response;
+  }
   try {
     const body = await req.json();
     const validated = registerSchema.parse(body);

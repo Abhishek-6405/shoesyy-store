@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Your orders", "View your SHOESY order history and delivery status.", undefined, true);
 import Link from "next/link";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
@@ -49,7 +51,7 @@ export default async function OrdersPage() {
     <div className="py-8 sm:py-14">
       <Container>
         <div className="pb-6 mb-8 border-b border-zinc-200 dark:border-zinc-800">
-          <span className="text-xs font-black uppercase tracking-widest text-brand-500">
+          <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400">
             Purchase History
           </span>
           <h1 className="font-display text-3xl sm:text-4xl font-black italic uppercase tracking-tight text-zinc-900 dark:text-white">
@@ -59,13 +61,13 @@ export default async function OrdersPage() {
 
         {orders.length === 0 ? (
           <div className="py-20 sm:py-28 text-center max-w-md mx-auto">
-            <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-400 flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 flex items-center justify-center mx-auto mb-6">
               <Package className="w-10 h-10" />
             </div>
             <h2 className="font-display text-3xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
               No Orders Found
             </h2>
-            <p className="text-sm text-zinc-500 mt-2 mb-8 leading-relaxed">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 mb-8 leading-relaxed">
               You haven&apos;t placed any orders yet. Discover our newest sneaker drops and place your first order.
             </p>
             <Button size="lg" asChild className="h-13 px-8 font-bold">
@@ -91,7 +93,7 @@ export default async function OrdersPage() {
                       </span>
                       {getStatusBadge(order.status)}
                     </div>
-                    <p className="text-xs text-zinc-400">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">
                       Placed on{" "}
                       {new Date(order.createdAt).toLocaleDateString("en-IN", {
                         day: "numeric",
@@ -105,7 +107,7 @@ export default async function OrdersPage() {
 
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <span className="text-xs text-zinc-400 block font-medium">Total</span>
+                      <span className="text-xs text-zinc-600 dark:text-zinc-400 block font-medium">Total</span>
                       <span className="text-lg font-black text-zinc-900 dark:text-white">
                         {formatPrice(Number(order.totalAmount))}
                       </span>
@@ -140,7 +142,7 @@ export default async function OrdersPage() {
                         <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
                           {item.name}
                         </p>
-                        <p className="text-[11px] text-zinc-400">
+                        <p className="text-[11px] text-zinc-600 dark:text-zinc-400">
                           UK {item.size} • Qty {item.quantity}
                         </p>
                         <p className="text-xs font-black text-brand-600 mt-0.5">

@@ -74,7 +74,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
                 )}
                 {t.type === "info" && (
-                  <Info className="w-5 h-5 text-brand-500 shrink-0" />
+                  <Info className="w-5 h-5 text-brand-700 dark:text-brand-400 shrink-0" />
                 )}
                 <p className="text-xs sm:text-sm font-semibold leading-snug">{t.message}</p>
               </div>
@@ -82,7 +82,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               <button
                 onClick={() => removeToast(t.id)}
                 aria-label="Close notification"
-                className="ml-3 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-1"
+                className="ml-3 text-zinc-600 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 p-1"
               >
                 <X className="w-4 h-4" />
               </button>

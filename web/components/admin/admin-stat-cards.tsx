@@ -101,7 +101,7 @@ export function AdminStatCards({
         className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-emerald-500/30 transition-colors"
       >
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
             Total Revenue
           </span>
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
@@ -111,7 +111,7 @@ export function AdminStatCards({
         <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
           <AnimatedCounter value={totalRevenue} isCurrency />
         </div>
-        <p className="text-xs text-zinc-400 mt-1 flex items-center gap-1">
+        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 flex items-center gap-1">
           <Sparkles className="w-3 h-3 text-emerald-500" />
           Excludes cancelled orders
         </p>
@@ -123,17 +123,17 @@ export function AdminStatCards({
         className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-brand-500/30 transition-colors"
       >
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
             Total Orders
           </span>
-          <div className="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-700 dark:text-brand-400 flex items-center justify-center">
             <ShoppingCart className="w-5 h-5" />
           </div>
         </div>
         <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
           <AnimatedCounter value={totalOrders} />
         </div>
-        <p className="text-xs text-zinc-400 mt-1">Across all payment methods</p>
+        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Across all payment methods</p>
       </motion.div>
 
       {/* Total Customers */}
@@ -142,7 +142,7 @@ export function AdminStatCards({
         className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-sky-500/30 transition-colors"
       >
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
             Registered Customers
           </span>
           <div className="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center">
@@ -152,7 +152,7 @@ export function AdminStatCards({
         <div className="mt-4 font-display font-black text-2xl sm:text-3xl text-zinc-900 dark:text-white">
           <AnimatedCounter value={totalCustomers} />
         </div>
-        <p className="text-xs text-zinc-400 mt-1">Buyer accounts in database</p>
+        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">Buyer accounts in database</p>
       </motion.div>
 
       {/* Total Products */}
@@ -161,7 +161,7 @@ export function AdminStatCards({
         className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:border-amber-500/30 transition-colors"
       >
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
             Catalog Items
           </span>
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">

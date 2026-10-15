@@ -72,13 +72,13 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
     >
       <Container>
         <div className="text-center max-w-xl mx-auto mb-10">
-          <span className="text-xs font-black uppercase tracking-widest text-brand-500">
+          <span className="text-xs font-black uppercase tracking-widest text-brand-700 dark:text-brand-400">
             Verified Community Reviews
           </span>
           <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mt-1 text-zinc-900 dark:text-white">
             Loved By Sneakerheads
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-500 mt-2">
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-2">
             Over 10,000+ pairs delivered across Delhi, Mumbai, Bengaluru, and beyond.
           </p>
         </div>
@@ -110,7 +110,7 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
                     <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
                       {current.name}
                     </h4>
-                    <span className="text-xs text-zinc-400">{current.role}</span>
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">{current.role}</span>
                   </div>
                   <span className="text-[11px] font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950 px-2.5 py-1 rounded-full border border-brand-200 dark:border-brand-800">
                     {current.shoe}

@@ -1,4 +1,6 @@
 import React from "react";
+import { pageMetadata } from "@/lib/seo";
+export const metadata = pageMetadata("Manage products", "SHOESY catalog and stock management.", undefined, true);
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { ProductsTable } from "@/components/admin/products-table";
@@ -116,7 +118,7 @@ export default async function AdminProductsPage({ searchParams }: AdminProductsP
           <h1 className="font-display font-black text-3xl uppercase tracking-wider text-zinc-900 dark:text-white">
             Sneaker Products
           </h1>
-          <p className="text-sm text-zinc-500 mt-1">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
             Manage your entire footwear inventory, prices, sizing, and storefront visibility.
           </p>
         </div>

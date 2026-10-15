@@ -75,12 +75,12 @@ export function DashboardCharts({
           <div className="flex items-center justify-between mb-6">
             <div>
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-brand-500" />
+                <TrendingUp className="w-4 h-4 text-brand-700 dark:text-brand-400" />
                 <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider">
                   30-Day Revenue Trend
                 </h3>
               </div>
-              <p className="text-xs text-zinc-500 mt-1">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
                 Daily settled revenue across all storefront sales
               </p>
             </div>
@@ -123,7 +123,7 @@ export function DashboardCharts({
                           <div className="text-brand-400 font-black text-sm mt-1">
                             {formatPrice(data.revenue)}
                           </div>
-                          <div className="text-zinc-400 text-[11px] mt-0.5">
+                          <div className="text-zinc-600 dark:text-zinc-400 text-[11px] mt-0.5">
                             {data.orders} order{data.orders === 1 ? "" : "s"}
                           </div>
                         </div>
@@ -152,13 +152,13 @@ export function DashboardCharts({
         <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <PieIcon className="w-4 h-4 text-brand-500" />
+              <PieIcon className="w-4 h-4 text-brand-700 dark:text-brand-400" />
               <h3 className="font-display font-bold text-lg text-zinc-900 dark:text-white uppercase tracking-wider">
                 Orders by Status
               </h3>
             </div>
           </div>
-          <p className="text-xs text-zinc-500 mb-2">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-2">
             Distribution across order lifecycle
           </p>
 
@@ -222,7 +222,7 @@ export function DashboardCharts({
               Top 5 Selling Products
             </h3>
           </div>
-          <span className="text-xs text-zinc-500">By total volume sold</span>
+          <span className="text-xs text-zinc-600 dark:text-zinc-400">By total volume sold</span>
         </div>
 
         <div className="h-64 w-full">
@@ -250,13 +250,13 @@ export function DashboardCharts({
                     return (
                       <div className="bg-zinc-900 text-white p-3 rounded-xl shadow-xl border border-zinc-800 text-xs">
                         <div className="font-bold text-zinc-200">{data.name}</div>
-                        <div className="text-zinc-400 text-[11px]">{data.brand}</div>
+                        <div className="text-zinc-600 dark:text-zinc-400 text-[11px]">{data.brand}</div>
                         <div className="mt-1 flex items-center justify-between gap-4">
-                          <span className="text-zinc-400">Units Sold:</span>
+                          <span className="text-zinc-600 dark:text-zinc-400">Units Sold:</span>
                           <span className="font-black text-brand-400">{data.unitsSold} pairs</span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-zinc-400">Total Revenue:</span>
+                          <span className="text-zinc-600 dark:text-zinc-400">Total Revenue:</span>
                           <span className="font-bold text-emerald-400">{formatPrice(data.revenue)}</span>
                         </div>
                       </div>
